@@ -23,6 +23,7 @@ void CCleanupHistoryDlg::DoDataExchange(CDataExchange* pDX)
 	CDialog::DoDataExchange(pDX);
 }
 
+// http://www.51itong.net/vc-7147.html
 BEGIN_MESSAGE_MAP(CCleanupHistoryDlg, CDialog)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
@@ -30,6 +31,19 @@ BEGIN_MESSAGE_MAP(CCleanupHistoryDlg, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON1, &CCleanupHistoryDlg::OnBnClickedTemporaryInternetFiles)
 	ON_BN_CLICKED(IDC_BUTTON2, &CCleanupHistoryDlg::OnBnClickedInternetCookies)
 	ON_BN_CLICKED(IDC_BUTTON3, &CCleanupHistoryDlg::OnBnClickedInternetHistoryItems)
+	ON_BN_CLICKED(IDC_BUTTON4, &CCleanupHistoryDlg::OnBnClickedInternetTypedUrls)
+	ON_BN_CLICKED(IDC_BUTTON5, &CCleanupHistoryDlg::OnBnClickedInternetProtectedStorageSystemProvider)
+	ON_BN_CLICKED(IDC_BUTTON6, &CCleanupHistoryDlg::OnBnClickedIntelliForms)
+	ON_BN_CLICKED(IDC_BUTTON7, &CCleanupHistoryDlg::OnBnClickedRASAdresses)
+	ON_BN_CLICKED(IDC_BUTTON8, &CCleanupHistoryDlg::OnBnClickedTemp)
+	ON_BN_CLICKED(IDC_BUTTON9, &CCleanupHistoryDlg::OnBnClickedRecycleBin)
+	ON_BN_CLICKED(IDC_BUTTON10, &CCleanupHistoryDlg::OnBnClickedRunMRU)
+	ON_BN_CLICKED(IDC_BUTTON11, &CCleanupHistoryDlg::OnBnClickedRecentDocs)
+	ON_BN_CLICKED(IDC_BUTTON12, &CCleanupHistoryDlg::OnBnClickedWinlogonUserName)
+	ON_BN_CLICKED(IDC_BUTTON13, &CCleanupHistoryDlg::OnBnClickedDocFindSpec)
+	ON_BN_CLICKED(IDC_BUTTON14, &CCleanupHistoryDlg::OnBnClickedFindComputerMRU)
+	ON_BN_CLICKED(IDC_BUTTON15, &CCleanupHistoryDlg::OnBnClickedNetHood)
+	ON_BN_CLICKED(IDC_BUTTON16, &CCleanupHistoryDlg::OnBnClickedTelNet)
 END_MESSAGE_MAP()
 
 // CCleanupHistoryDlg 消息处理程序
@@ -84,31 +98,25 @@ HCURSOR CCleanupHistoryDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+// Internet 临时文件
 void CCleanupHistoryDlg::OnBnClickedTemporaryInternetFiles()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	TCHAR					tchDir[MAX_PATH] = {0};
-	OS_VERSION_USER_DEFINED OsVersion = OS_VERSION_UNKNOWN;
-	STARTUPINFO				StartupInfo = {0};
+	TCHAR tchDir[MAX_PATH] = {0};
 
 
 	__try
 	{
 		CCommandLine::Execute(_T("taskkill /f /im iexplore.exe"), TRUE, TRUE, NULL);
 
+		// C:\Users\Administrator\AppData\Local\Microsoft\Windows\Temporary Internet Files
 		if (!SHGetSpecialFolderPath(NULL, tchDir, CSIDL_INTERNET_CACHE, FALSE))
 		{
 			CSimpleLogSR(MOD_CLEANUP_HISTORY_DLG, LOG_LEVEL_ERROR, "SHGetSpecialFolderPath failed. (%d)", GetLastError());
 			__leave;
 		}
 
-		OsVersion = COperationSystemVersion::GetInstance()->GetOSVersion();
-		if (OS_VERSION_WINDOWS_10 <= OsVersion)
-			StringCchPrintf(tchDir, _countof(tchDir), _T("%s\\IE"), tchDir);
-		else
-			StringCchPrintf(tchDir, _countof(tchDir), _T("%s\\Content.IE5"), tchDir);
-
-		CDirectoryControl::Delete(tchDir);
+		CDirectoryControl::Empty(tchDir);
 	}
 	__finally
 	{
@@ -118,6 +126,7 @@ void CCleanupHistoryDlg::OnBnClickedTemporaryInternetFiles()
 	return;
 }
 
+// Cookie
 void CCleanupHistoryDlg::OnBnClickedInternetCookies()
 {
 	// TODO: 在此添加控件通知处理程序代码
@@ -128,13 +137,14 @@ void CCleanupHistoryDlg::OnBnClickedInternetCookies()
 	{
 		CCommandLine::Execute(_T("taskkill /f /im iexplore.exe"), TRUE, TRUE, NULL);
 
+		// C:\Users\Administrator\AppData\Roaming\Microsoft\Windows\Cookies
 		if (!SHGetSpecialFolderPath(NULL, tchDir, CSIDL_COOKIES, FALSE))
 		{
 			CSimpleLogSR(MOD_CLEANUP_HISTORY_DLG, LOG_LEVEL_ERROR, "SHGetSpecialFolderPath failed. (%d)", GetLastError());
 			__leave;
 		}
 
-		CDirectoryControl::Delete(tchDir);
+		CDirectoryControl::Empty(tchDir);
 	}
 	__finally
 	{
@@ -144,6 +154,7 @@ void CCleanupHistoryDlg::OnBnClickedInternetCookies()
 	return;
 }
 
+// 历史记录
 void CCleanupHistoryDlg::OnBnClickedInternetHistoryItems()
 {
 	// TODO: 在此添加控件通知处理程序代码
@@ -154,13 +165,404 @@ void CCleanupHistoryDlg::OnBnClickedInternetHistoryItems()
 	{
 		CCommandLine::Execute(_T("taskkill /f /im iexplore.exe"), TRUE, TRUE, NULL);
 
+		// C:\Users\Administrator\AppData\Local\Microsoft\Windows\History
 		if (!SHGetSpecialFolderPath(NULL, tchDir, CSIDL_HISTORY, FALSE))
 		{
 			CSimpleLogSR(MOD_CLEANUP_HISTORY_DLG, LOG_LEVEL_ERROR, "SHGetSpecialFolderPath failed. (%d)", GetLastError());
 			__leave;
 		}
 
-		CDirectoryControl::Delete(tchDir);
+		CDirectoryControl::Empty(tchDir);
+	}
+	__finally
+	{
+		;
+	}
+
+	return;
+}
+
+// 地址栏历史记录
+void CCleanupHistoryDlg::OnBnClickedInternetTypedUrls()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	LSTATUS lStatus = ERROR_SUCCESS;
+
+
+	__try
+	{
+		SHDeleteKey(HKEY_CURRENT_USER, _T("Software\\Microsoft\\Internet Explorer\\TypedUrls"));
+	}
+	__finally
+	{
+		;
+	}
+
+	return;
+}
+
+// 密码历史记录
+void CCleanupHistoryDlg::OnBnClickedInternetProtectedStorageSystemProvider()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	/*
+	CString sKey;
+	DWORD dwRet;
+
+	if (IsWindows2k() || IsWindowsNT())//先判断系统
+	{
+		CString sBaseKey;
+		SECURITY_DESCRIPTOR NewSD;
+		BYTE* pOldSD;
+		PACL pDacl = NULL;
+		PSID pSid = NULL;
+		TCHAR szSid[256];
+		if (GetUserSid(&pSid))
+		{
+			//get the hiden key name
+			GetSidString(pSid, szSid);
+
+			sKey = _T("Software//Microsoft//Protected Storage System Provider//");
+			sKey += szSid;
+
+			//get old SD
+			sBaseKey = sKey;
+			GetOldSD(HKEY_CURRENT_USER, sBaseKey, &pOldSD);
+
+			//set new SD and then clear
+			if (CreateNewSD(pSid, &NewSD, &pDacl))
+			{
+				RegSetPrivilege(HKEY_CURRENT_USER, sKey, &NewSD, FALSE);
+
+				sKey += _T("//Data");
+				RegSetPrivilege(HKEY_CURRENT_USER, sKey, &NewSD, FALSE);
+
+				sKey += _T("//e161255a-37c3-11d2-bcaa-00c04fd929db");
+				RegSetPrivilege(HKEY_CURRENT_USER, sKey, &NewSD, TRUE);
+
+				dwRet = SHDeleteKey(HKEY_CURRENT_USER, sKey);
+			}
+
+			if (pDacl != NULL)
+				HeapFree(GetProcessHeap(), 0, pDacl);
+
+			//restore old SD
+			if (pOldSD)
+			{
+				RegSetPrivilege(HKEY_CURRENT_USER, sBaseKey, 
+					(SECURITY_DESCRIPTOR*)pOldSD, FALSE);
+				delete pOldSD;
+			}
+		}
+		if (pSid)
+			HeapFree(GetProcessHeap(), 0, pSid);
+	}
+	*/
+}
+
+// 表单数据
+void CCleanupHistoryDlg::OnBnClickedIntelliForms()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	LSTATUS lStatus = ERROR_SUCCESS;
+
+
+	__try
+	{
+		SHDeleteKey(HKEY_CURRENT_USER, _T("Software\\Microsoft\\Internet Explorer\\IntelliForms"));
+	}
+	__finally
+	{
+		;
+	}
+
+	return;
+}
+
+// RAS自动拨号历史记录
+void CCleanupHistoryDlg::OnBnClickedRASAdresses()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	LSTATUS lStatus = ERROR_SUCCESS;
+
+
+	__try
+	{
+		lStatus = SHDeleteKey(HKEY_CURRENT_USER, _T("Software\\Microsoft\\RAS AutoDial\\Addresses"));
+		if (ERROR_SUCCESS != lStatus)
+		{
+			CSimpleLogSR(MOD_CLEANUP_HISTORY_DLG, LOG_LEVEL_ERROR, "SHDeleteKey failed. (%d)", lStatus);
+			__leave;
+		}
+	}
+	__finally
+	{
+		;
+	}
+
+	return;
+}
+
+// 临时目录
+void CCleanupHistoryDlg::OnBnClickedTemp()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	TCHAR tchDir[MAX_PATH] = {0};
+
+
+	__try
+	{
+		// C:\Users\ADMINI~1\AppData\Local\Temp
+		if (!GetTempPath(_countof(tchDir), tchDir))
+		{
+			CSimpleLogSR(MOD_CLEANUP_HISTORY_DLG, LOG_LEVEL_ERROR, "GetTempPath failed. (%d)", GetLastError());
+			__leave;
+		}
+
+		CDirectoryControl::Empty(tchDir);
+	}
+	__finally
+	{
+		;
+	}
+
+	return;
+}
+
+// 回收站
+void CCleanupHistoryDlg::OnBnClickedRecycleBin()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	HRESULT hResult = S_OK;
+
+
+	__try
+	{
+		hResult = SHEmptyRecycleBin(NULL, NULL, SHERB_NOCONFIRMATION | SHERB_NOPROGRESSUI | SHERB_NOSOUND);
+		if (S_OK != hResult)
+		{
+			CSimpleLogSR(MOD_CLEANUP_HISTORY_DLG, LOG_LEVEL_ERROR, "SHEmptyRecycleBin failed. (%d)", hResult);
+			__leave;
+		}
+	}
+	__finally
+	{
+		;
+	}
+
+	return;
+}
+
+// 运行历史记录
+void CCleanupHistoryDlg::OnBnClickedRunMRU()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	LSTATUS lStatus = ERROR_SUCCESS;
+
+
+	__try
+	{
+		lStatus = SHDeleteKey(HKEY_CURRENT_USER, _T("Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\RunMRU"));
+		if (ERROR_SUCCESS != lStatus)
+		{
+			CSimpleLogSR(MOD_CLEANUP_HISTORY_DLG, LOG_LEVEL_ERROR, "SHDeleteKey failed. (%d)", lStatus);
+			__leave;
+		}
+	}
+	__finally
+	{
+		;
+	}
+
+	return;
+}
+
+// 文档历史记录
+void CCleanupHistoryDlg::OnBnClickedRecentDocs()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	TCHAR	tchDir[MAX_PATH] = {0};
+	LSTATUS lStatus = ERROR_SUCCESS;
+
+
+	__try
+	{
+		if (!SHGetSpecialFolderPath(NULL, tchDir, CSIDL_RECENT, FALSE))
+		{
+			CSimpleLogSR(MOD_CLEANUP_HISTORY_DLG, LOG_LEVEL_ERROR, "SHGetSpecialFolderPath failed. (%d)", GetLastError());
+			__leave;
+		}
+
+		CDirectoryControl::Empty(tchDir);
+
+		lStatus = SHDeleteKey(HKEY_CURRENT_USER, _T("Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\RecentDocs"));
+		if (ERROR_SUCCESS != lStatus)
+		{
+			CSimpleLogSR(MOD_CLEANUP_HISTORY_DLG, LOG_LEVEL_ERROR, "SHDeleteKey failed. (%d)", lStatus);
+			__leave;
+		}
+	}
+	__finally
+	{
+		;
+	}
+
+	return;
+}
+
+// 登录用户历史记录
+void CCleanupHistoryDlg::OnBnClickedWinlogonUserName()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	LSTATUS lStatus = ERROR_SUCCESS;
+
+
+	__try
+	{
+		lStatus = SHDeleteValue(HKEY_CURRENT_USER, _T("Software\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\\RecentDocs"), _T("DefaultUserName"));
+		if (ERROR_SUCCESS != lStatus)
+		{
+			CSimpleLogSR(MOD_CLEANUP_HISTORY_DLG, LOG_LEVEL_ERROR, "SHDeleteValue failed. (%d)", lStatus);
+			__leave;
+		}
+
+		lStatus = SHDeleteValue(HKEY_CURRENT_USER, _T("Software\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\\RecentDocs"), _T("AltDefaultUserName"));
+		if (ERROR_SUCCESS != lStatus)
+		{
+			CSimpleLogSR(MOD_CLEANUP_HISTORY_DLG, LOG_LEVEL_ERROR, "SHDeleteValue failed. (%d)", lStatus);
+			__leave;
+		}
+
+		lStatus = SHDeleteValue(HKEY_LOCAL_MACHINE, _T("Software\\Microsoft\\Windows\\CurrentVersion\\Winlogon\\RecentDocs"), _T("DefaultUserName"));
+		if (ERROR_SUCCESS != lStatus)
+		{
+			CSimpleLogSR(MOD_CLEANUP_HISTORY_DLG, LOG_LEVEL_ERROR, "SHDeleteValue failed. (%d)", lStatus);
+			__leave;
+		}
+	}
+	__finally
+	{
+		;
+	}
+
+	return;
+}
+
+// 搜索历史记录
+void CCleanupHistoryDlg::OnBnClickedDocFindSpec()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	LSTATUS lStatus = ERROR_SUCCESS;
+
+
+	__try
+	{
+		lStatus = SHDeleteKey(HKEY_CURRENT_USER, _T("Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Doc Find Spec"));
+		if (ERROR_SUCCESS != lStatus)
+		{
+			CSimpleLogSR(MOD_CLEANUP_HISTORY_DLG, LOG_LEVEL_ERROR, "SHDeleteKey failed. (%d)", lStatus);
+			__leave;
+		}
+
+		lStatus = SHDeleteKey(HKEY_CURRENT_USER, _T("Software\\Microsoft\\Internet Explorer\\Explorer Bars\\{C4EE31F3-4768-11D2-BE5C-00A0C9A83DA1}\\ContainingTextMRU"));
+		if (ERROR_SUCCESS != lStatus)
+		{
+			CSimpleLogSR(MOD_CLEANUP_HISTORY_DLG, LOG_LEVEL_ERROR, "SHDeleteKey failed. (%d)", lStatus);
+			__leave;
+		}
+
+		lStatus = SHDeleteKey(HKEY_LOCAL_MACHINE, _T("Software\\Microsoft\\Internet Explorer\\Explorer Bars\\{C4EE31F3-4768-11D2-BE5C-00A0C9A83DA1}\\FilesNamedMRU"));
+		if (ERROR_SUCCESS != lStatus)
+		{
+			CSimpleLogSR(MOD_CLEANUP_HISTORY_DLG, LOG_LEVEL_ERROR, "SHDeleteKey failed. (%d)", lStatus);
+			__leave;
+		}
+	}
+	__finally
+	{
+		;
+	}
+
+	return;
+}
+
+// 查找
+void CCleanupHistoryDlg::OnBnClickedFindComputerMRU()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	LSTATUS lStatus = ERROR_SUCCESS;
+
+
+	__try
+	{
+		lStatus = SHDeleteKey(HKEY_CURRENT_USER, _T("Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FindComputerMRU"));
+		if (ERROR_SUCCESS != lStatus)
+		{
+			CSimpleLogSR(MOD_CLEANUP_HISTORY_DLG, LOG_LEVEL_ERROR, "SHDeleteKey failed. (%d)", lStatus);
+			__leave;
+		}
+
+		lStatus = SHDeleteKey(HKEY_CURRENT_USER, _T("Software\\Microsoft\\Internet Explorer\\Explorer Bars\\{C4EE31F3-4768-11D2-BE5C-00A0C9A83DA1}\\ComputerNameMRU"));
+		if (ERROR_SUCCESS != lStatus)
+		{
+			CSimpleLogSR(MOD_CLEANUP_HISTORY_DLG, LOG_LEVEL_ERROR, "SHDeleteKey failed. (%d)", lStatus);
+			__leave;
+		}
+	}
+	__finally
+	{
+		;
+	}
+
+	return;
+}
+
+void CCleanupHistoryDlg::OnBnClickedNetHood()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	TCHAR tchDir[MAX_PATH] = {0};
+
+
+	__try
+	{
+		if (!SHGetSpecialFolderPath(NULL, tchDir, CSIDL_NETHOOD, FALSE))
+			__leave;
+
+		CDirectoryControl::Empty(tchDir);
+	}
+	__finally
+	{
+		;
+	}
+
+	return;
+}
+
+void CCleanupHistoryDlg::OnBnClickedTelNet()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	LSTATUS lStatus = ERROR_SUCCESS;
+	ULONG	ulIndex = 0;
+	TCHAR	tchReg[MAX_PATH] = {0};
+
+
+	__try
+	{
+		for (; ulIndex <= 8; ulIndex++)
+		{
+			StringCchPrintf(tchReg, _countof(tchReg), _T("Machine%d"), ulIndex);
+			SHDeleteValue(HKEY_CURRENT_USER, _T("Software\\Microsoft\\Telnet"), tchReg);
+
+			StringCchPrintf(tchReg, _countof(tchReg), _T("Service%d"), ulIndex);
+			SHDeleteValue(HKEY_CURRENT_USER, _T("Software\\Microsoft\\Telnet"), tchReg);
+
+			StringCchPrintf(tchReg, _countof(tchReg), _T("TermType%d"), ulIndex);
+			SHDeleteValue(HKEY_CURRENT_USER, _T("Software\\Microsoft\\Telnet"), tchReg);
+		}
+
+		SHDeleteValue(HKEY_CURRENT_USER, _T("Software\\Microsoft\\Telnet"), _T("LastMachine"));
+		SHDeleteValue(HKEY_CURRENT_USER, _T("Software\\Microsoft\\Telnet"), _T("LastService"));
+		SHDeleteValue(HKEY_CURRENT_USER, _T("Software\\Microsoft\\Telnet"), _T("LastTermType"));
 	}
 	__finally
 	{

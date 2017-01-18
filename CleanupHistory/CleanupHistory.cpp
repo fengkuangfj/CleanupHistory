@@ -24,7 +24,6 @@ CCleanupHistoryApp::CCleanupHistoryApp()
 	// 将所有重要的初始化放置在 InitInstance 中
 }
 
-
 // 唯一的一个 CCleanupHistoryApp 对象
 
 CCleanupHistoryApp theApp;
@@ -102,6 +101,8 @@ CCleanupHistoryApp::Init()
 			StringCchPrintf(tchLog, _countof(tchLog), _T("%s.log"), tchLog);
 			CSimpleLog::GetInstance(tchLog);
 		}
+
+		bRet = TRUE;
 	}
 	__finally
 	{
@@ -122,6 +123,8 @@ CCleanupHistoryApp::Unload()
 		CSimpleLog::ReleaseInstance();
 		CProcessControl::ReleaseInstance();
 		CSimpleDump::ReleaseInstance();
+
+		bRet = TRUE;
 	}
 	__finally
 	{

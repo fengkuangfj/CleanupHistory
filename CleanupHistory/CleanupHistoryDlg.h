@@ -32,4 +32,17 @@ public:
 	afx_msg void OnBnClickedTemporaryInternetFiles();
 	afx_msg void OnBnClickedInternetCookies();
 	afx_msg void OnBnClickedInternetHistoryItems();
+	afx_msg void OnBnClickedInternetTypedUrls();
+	afx_msg void OnBnClickedInternetProtectedStorageSystemProvider();
+	afx_msg void OnBnClickedIntelliForms();
+	afx_msg void OnBnClickedRASAdresses();
+	afx_msg void OnBnClickedTemp();
+	afx_msg void OnBnClickedRecycleBin();
+	afx_msg void OnBnClickedRunMRU();
+	afx_msg void OnBnClickedRecentDocs();
+	afx_msg void OnBnClickedWinlogonUserName();
+	afx_msg void OnBnClickedDocFindSpec();
+	afx_msg void OnBnClickedFindComputerMRU();
+	afx_msg void OnBnClickedNetHood();
+	afx_msg void OnBnClickedTelNet();
 };

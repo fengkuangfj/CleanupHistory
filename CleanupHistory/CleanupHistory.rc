@@ -84,8 +84,21 @@ CAPTION "CleanupHistory"
 FONT 9, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
     PUSHBUTTON      "TemporaryInternetFiles",IDC_BUTTON1,7,7,78,14
-    PUSHBUTTON      "InternetCookies",IDC_BUTTON2,7,33,78,14
-    PUSHBUTTON      "InternetHistoryItems",IDC_BUTTON3,7,59,78,14
+    PUSHBUTTON      "InternetCookies",IDC_BUTTON2,7,31,78,14
+    PUSHBUTTON      "InternetHistoryItems",IDC_BUTTON3,7,55,78,14
+    PUSHBUTTON      "InternetTypedUrls",IDC_BUTTON4,7,79,78,14
+    PUSHBUTTON      "InternetProtectedStorageSystemProvider",IDC_BUTTON5,176,7,137,14
+    PUSHBUTTON      "IntelliForms",IDC_BUTTON6,7,103,78,14
+    PUSHBUTTON      "RASAddresses",IDC_BUTTON7,176,79,137,14
+    PUSHBUTTON      "Temp",IDC_BUTTON8,176,103,137,14
+    PUSHBUTTON      "RecycleBin",IDC_BUTTON9,91,31,79,14
+    PUSHBUTTON      "RunMRU",IDC_BUTTON10,91,55,79,14
+    PUSHBUTTON      "RecentDocs",IDC_BUTTON11,91,79,79,14
+    PUSHBUTTON      "WinlogonUserName",IDC_BUTTON12,91,7,79,14
+    PUSHBUTTON      "DocFindSpec",IDC_BUTTON13,91,103,79,14
+    PUSHBUTTON      "FindComputerMRU",IDC_BUTTON14,91,131,79,14
+    PUSHBUTTON      "NetHood",IDC_BUTTON15,176,55,137,14
+    PUSHBUTTON      "TelNet",IDC_BUTTON16,176,31,137,14
 END
 
 
