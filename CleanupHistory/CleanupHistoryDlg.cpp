@@ -44,6 +44,7 @@ BEGIN_MESSAGE_MAP(CCleanupHistoryDlg, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON14, &CCleanupHistoryDlg::OnBnClickedFindComputerMRU)
 	ON_BN_CLICKED(IDC_BUTTON15, &CCleanupHistoryDlg::OnBnClickedNetHood)
 	ON_BN_CLICKED(IDC_BUTTON16, &CCleanupHistoryDlg::OnBnClickedTelNet)
+	ON_BN_CLICKED(IDC_BUTTON17, &CCleanupHistoryDlg::OnBnClickedQQ)
 END_MESSAGE_MAP()
 
 // CCleanupHistoryDlg 消息处理程序
@@ -211,51 +212,51 @@ void CCleanupHistoryDlg::OnBnClickedInternetProtectedStorageSystemProvider()
 
 	if (IsWindows2k() || IsWindowsNT())//先判断系统
 	{
-		CString sBaseKey;
-		SECURITY_DESCRIPTOR NewSD;
-		BYTE* pOldSD;
-		PACL pDacl = NULL;
-		PSID pSid = NULL;
-		TCHAR szSid[256];
-		if (GetUserSid(&pSid))
-		{
-			//get the hiden key name
-			GetSidString(pSid, szSid);
+	CString sBaseKey;
+	SECURITY_DESCRIPTOR NewSD;
+	BYTE* pOldSD;
+	PACL pDacl = NULL;
+	PSID pSid = NULL;
+	TCHAR szSid[256];
+	if (GetUserSid(&pSid))
+	{
+	//get the hiden key name
+	GetSidString(pSid, szSid);
 
-			sKey = _T("Software//Microsoft//Protected Storage System Provider//");
-			sKey += szSid;
+	sKey = _T("Software//Microsoft//Protected Storage System Provider//");
+	sKey += szSid;
 
-			//get old SD
-			sBaseKey = sKey;
-			GetOldSD(HKEY_CURRENT_USER, sBaseKey, &pOldSD);
+	//get old SD
+	sBaseKey = sKey;
+	GetOldSD(HKEY_CURRENT_USER, sBaseKey, &pOldSD);
 
-			//set new SD and then clear
-			if (CreateNewSD(pSid, &NewSD, &pDacl))
-			{
-				RegSetPrivilege(HKEY_CURRENT_USER, sKey, &NewSD, FALSE);
+	//set new SD and then clear
+	if (CreateNewSD(pSid, &NewSD, &pDacl))
+	{
+	RegSetPrivilege(HKEY_CURRENT_USER, sKey, &NewSD, FALSE);
 
-				sKey += _T("//Data");
-				RegSetPrivilege(HKEY_CURRENT_USER, sKey, &NewSD, FALSE);
+	sKey += _T("//Data");
+	RegSetPrivilege(HKEY_CURRENT_USER, sKey, &NewSD, FALSE);
 
-				sKey += _T("//e161255a-37c3-11d2-bcaa-00c04fd929db");
-				RegSetPrivilege(HKEY_CURRENT_USER, sKey, &NewSD, TRUE);
+	sKey += _T("//e161255a-37c3-11d2-bcaa-00c04fd929db");
+	RegSetPrivilege(HKEY_CURRENT_USER, sKey, &NewSD, TRUE);
 
-				dwRet = SHDeleteKey(HKEY_CURRENT_USER, sKey);
-			}
+	dwRet = SHDeleteKey(HKEY_CURRENT_USER, sKey);
+	}
 
-			if (pDacl != NULL)
-				HeapFree(GetProcessHeap(), 0, pDacl);
+	if (pDacl != NULL)
+	HeapFree(GetProcessHeap(), 0, pDacl);
 
-			//restore old SD
-			if (pOldSD)
-			{
-				RegSetPrivilege(HKEY_CURRENT_USER, sBaseKey, 
-					(SECURITY_DESCRIPTOR*)pOldSD, FALSE);
-				delete pOldSD;
-			}
-		}
-		if (pSid)
-			HeapFree(GetProcessHeap(), 0, pSid);
+	//restore old SD
+	if (pOldSD)
+	{
+	RegSetPrivilege(HKEY_CURRENT_USER, sBaseKey, 
+	(SECURITY_DESCRIPTOR*)pOldSD, FALSE);
+	delete pOldSD;
+	}
+	}
+	if (pSid)
+	HeapFree(GetProcessHeap(), 0, pSid);
 	}
 	*/
 }
@@ -567,6 +568,88 @@ void CCleanupHistoryDlg::OnBnClickedTelNet()
 	__finally
 	{
 		;
+	}
+
+	return;
+}
+
+void CCleanupHistoryDlg::OnBnClickedQQ()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	TCHAR tchQQ[MAX_PATH] = {0};
+	TCHAR tchDirRoaming[MAX_PATH] = {0};
+	TCHAR tchDirProgramData[MAX_PATH] = {0};
+	TCHAR tchDirDocuments[MAX_PATH] = {0};
+	TCHAR tchPath[MAX_PATH] = {0};
+
+
+	__try
+	{
+		StringCchPrintf(tchQQ, _countof(tchQQ), _T("464447966"));
+
+		CCommandLine::Execute(_T("taskkill /f /im qq.exe"), TRUE, TRUE, NULL);
+		CCommandLine::Execute(_T("taskkill /f /im qqprotect.exe"), TRUE, TRUE, NULL);
+		CCommandLine::Execute(_T("taskkill /f /im qq.exe"), TRUE, TRUE, NULL);
+		CCommandLine::Execute(_T("taskkill /f /im qqprotect.exe"), TRUE, TRUE, NULL);
+
+		// 目录
+
+		// C:\Users\Administrator\AppData\Roaming
+		if (!SHGetSpecialFolderPath(NULL, tchDirRoaming, CSIDL_APPDATA, FALSE))
+			__leave;
+
+		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent\\QQ\\Misc\\com.tencent.gamelife\\QQGameLife\\%s"), tchDirRoaming, tchQQ);
+		CDirectoryControl::Delete(tchPath);
+
+		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent\\QQ\\SNS\\Com.Tencent.PersonalCard\\%s"), tchDirRoaming, tchQQ);
+		CDirectoryControl::Delete(tchPath);
+
+		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent\\QQ\\webkit_cache\\%s"), tchDirRoaming, tchQQ);
+		CDirectoryControl::Delete(tchPath);
+
+		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent\\QQMiniDL\\%s"), tchDirRoaming, tchQQ);
+		CDirectoryControl::Delete(tchPath);
+
+		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent\\Users\\%s"), tchDirRoaming, tchQQ);
+		CDirectoryControl::Delete(tchPath);
+
+		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent\\QQ\\webkit_cache\\%s_medalwall"), tchDirRoaming, tchQQ);
+		CDirectoryControl::Delete(tchPath);
+
+		// C:\ProgramData
+		if (!SHGetSpecialFolderPath(NULL, tchDirProgramData, CSIDL_COMMON_APPDATA, FALSE))
+			__leave;
+
+		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent\\QQProtect\\Qscan\\%s"), tchDirProgramData, tchQQ);
+		CDirectoryControl::Delete(tchPath);
+
+		// D:\My Documents
+		if (!SHGetSpecialFolderPath(NULL, tchDirDocuments, CSIDL_MYDOCUMENTS, FALSE))
+			__leave;
+
+		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent Files\\%s"), tchDirDocuments, tchQQ);
+		CDirectoryControl::Delete(tchPath);
+
+		// 文件
+		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent\\QQ\\Misc\\%s"), tchDirRoaming, tchQQ);
+		DeleteFile(tchPath);
+
+		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent Files\\All Users\\QQ\\Misc\\com.tencent.qqshow\\qqshow6\\qqshow_%s.jpg"), tchDirDocuments, tchQQ);
+		DeleteFile(tchPath);
+
+		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent Files\\All Users\\QQ\\Misc\\com.tencent.qqshow\\xml6\\%s.xml"), tchDirDocuments, tchQQ);
+		DeleteFile(tchPath);
+
+		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent Files\\All Users\\QQ\\Misc\\com.tencent.qqshow\\xml6\\%s_f.xml"), tchDirDocuments, tchQQ);
+		DeleteFile(tchPath);
+
+		// 注册表
+		StringCchPrintf(tchPath, _countof(tchPath), _T("SOFTWARE\\Tencent\\Plugin\\VAS\\%s"), tchQQ);
+		SHDeleteKey(HKEY_CURRENT_USER, tchPath);
+	}
+	__finally
+	{
+
 	}
 
 	return;

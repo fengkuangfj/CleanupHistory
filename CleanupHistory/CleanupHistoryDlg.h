@@ -45,4 +45,5 @@ public:
 	afx_msg void OnBnClickedFindComputerMRU();
 	afx_msg void OnBnClickedNetHood();
 	afx_msg void OnBnClickedTelNet();
+	afx_msg void OnBnClickedQQ();
 };
