@@ -650,7 +650,7 @@ void CCleanupHistoryDlg::OnBnClickedQQ()
 	}
 	__finally
 	{
-
+		;
 	}
 
 	return;
