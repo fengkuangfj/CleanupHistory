@@ -45,6 +45,7 @@ BEGIN_MESSAGE_MAP(CCleanupHistoryDlg, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON15, &CCleanupHistoryDlg::OnBnClickedNetHood)
 	ON_BN_CLICKED(IDC_BUTTON16, &CCleanupHistoryDlg::OnBnClickedTelNet)
 	ON_BN_CLICKED(IDC_BUTTON17, &CCleanupHistoryDlg::OnBnClickedQQ)
+	ON_BN_CLICKED(IDC_BUTTON18, &CCleanupHistoryDlg::OnBnClickedRTX)
 END_MESSAGE_MAP()
 
 // CCleanupHistoryDlg 消息处理程序
@@ -650,6 +651,106 @@ void CCleanupHistoryDlg::OnBnClickedQQ()
 	__finally
 	{
 
+	}
+
+	return;
+}
+
+void CCleanupHistoryDlg::OnBnClickedRTX()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	TCHAR							tchAccount[MAX_PATH] = {0};
+	TCHAR							tchDirDocuments[MAX_PATH] = {0};
+	TCHAR							tchPath[MAX_PATH] = {0};
+	TCHAR							tchInstDir[MAX_PATH] = {0};
+	OS_PROCESSOR_TYPE_USER_DEFINED	OsProcessorType = OS_PROCESSOR_TYPE_UNKNOWN;
+	TCHAR							tchPathCfg[MAX_PATH] = {0};
+	DWORD							dwType = 0;
+	DWORD							dwDataBufSizeB = 0;
+	TCHAR							tchSubKey[MAX_PATH] = {0};
+	LSTATUS							lStatus = ERROR_SUCCESS;
+	LPTSTR							lpPosition = NULL;
+
+
+	__try
+	{
+		StringCchPrintf(tchAccount, _countof(tchAccount), _T("yuexiang"));
+
+		CCommandLine::Execute(_T("taskkill /f /im rtx.exe"), TRUE, TRUE, NULL);
+
+		// 目录
+
+		// D:\My Documents
+		if (!SHGetSpecialFolderPath(NULL, tchDirDocuments, CSIDL_MYDOCUMENTS, FALSE))
+			__leave;
+
+		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\My RTX Files\\%s"), tchDirDocuments, tchAccount);
+		CDirectoryControl::Delete(tchPath);
+
+		OsProcessorType = COperationSystemVersion::GetInstance()->GetOSProcessorType();
+		if (OS_PROCESSOR_TYPE_X64 == OsProcessorType)
+			StringCchPrintf(tchSubKey, _countof(tchSubKey), _T("SOFTWARE\\Wow6432Node\\Tencent\\RTXC"));
+		else
+			StringCchPrintf(tchSubKey, _countof(tchSubKey), _T("SOFTWARE\\Tencent\\RTXC"));
+
+		dwDataBufSizeB = sizeof(tchInstDir);
+		lStatus = SHRegGetValue(
+			HKEY_LOCAL_MACHINE,
+			tchSubKey,
+			_T("INSTDIR"),
+			SRRF_RT_REG_SZ,
+			&dwType,
+			tchInstDir,
+			&dwDataBufSizeB
+			);
+		if (ERROR_SUCCESS == lStatus)
+		{
+			if (_T('\\') == *(tchInstDir + _tcslen(tchInstDir) - 1))
+				*(tchInstDir + _tcslen(tchInstDir) - 1) = _T('\0');	
+
+			do 
+			{
+				lpPosition = StrRChr(tchInstDir, NULL, _T('\\'));
+				if (!lpPosition)
+					break;
+
+				*lpPosition = _T('_');
+			} while (TRUE);
+
+			lpPosition = StrRChr(tchInstDir, NULL, _T(':'));
+			if (lpPosition)
+			{
+				*lpPosition = *(lpPosition - 1);
+				StringCchPrintf(tchInstDir, _countof(tchInstDir), _T("%s"), lpPosition);
+
+				for (*tchInstDir = _T('C'); *tchInstDir <= _T('Z'); (*tchInstDir)++)
+				{
+					StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\RTXC File List\\%s\\Accounts\\%s"), tchDirDocuments, tchInstDir, tchAccount);
+					CDirectoryControl::Delete(tchPath);
+
+					StringCchPrintf(tchPathCfg, _countof(tchPathCfg), _T("%s\\RTXC File List\\%s\\Accounts\\rtx.cfg"), tchDirDocuments, tchInstDir);
+
+					if (GetPrivateProfileString(_T("Default"), _T("file_page_path"), _T(""), tchPath, _countof(tchPath), tchPathCfg))
+					{
+						StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\%s"), tchPath, tchAccount);
+						CDirectoryControl::Delete(tchPath);
+
+						WritePrivateProfileString(_T("Default"), _T("file_page_path"), _T(""), tchPathCfg);
+					}
+
+					WritePrivateProfileString(_T("Default"), _T("strAccount"), _T(""), tchPathCfg);
+					WritePrivateProfileString(_T("Default"), _T("strPassword"), _T(""), tchPathCfg);
+				}
+			}		
+		}
+
+		// 文件
+		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\RTXC File List\\%s\\Accounts\\UserPhotos\\%s"), tchDirDocuments, tchInstDir, tchAccount);
+		DeleteFile(tchPath);
+	}
+	__finally
+	{
+		;
 	}
 
 	return;

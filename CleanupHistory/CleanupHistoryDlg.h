@@ -46,4 +46,5 @@ public:
 	afx_msg void OnBnClickedNetHood();
 	afx_msg void OnBnClickedTelNet();
 	afx_msg void OnBnClickedQQ();
+	afx_msg void OnBnClickedRTX();
 };
