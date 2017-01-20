@@ -48,4 +48,5 @@ public:
 	afx_msg void OnBnClickedQQ();
 	afx_msg void OnBnClickedRTX();
 	afx_msg void OnBnClickedFoxmail();
+	afx_msg void OnBnClickedGoogleChrome();
 };

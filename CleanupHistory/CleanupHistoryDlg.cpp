@@ -47,6 +47,7 @@ BEGIN_MESSAGE_MAP(CCleanupHistoryDlg, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON17, &CCleanupHistoryDlg::OnBnClickedQQ)
 	ON_BN_CLICKED(IDC_BUTTON18, &CCleanupHistoryDlg::OnBnClickedRTX)
 	ON_BN_CLICKED(IDC_BUTTON19, &CCleanupHistoryDlg::OnBnClickedFoxmail)
+	ON_BN_CLICKED(IDC_BUTTON20, &CCleanupHistoryDlg::OnBnClickedGoogleChrome)
 END_MESSAGE_MAP()
 
 // CCleanupHistoryDlg 消息处理程序
@@ -815,5 +816,30 @@ void CCleanupHistoryDlg::OnBnClickedFoxmail()
 	}
 
 	return;
+}
 
+void CCleanupHistoryDlg::OnBnClickedGoogleChrome()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	TCHAR tchLocal[MAX_PATH] = {0};
+	TCHAR tchPath[MAX_PATH] = {0};
+
+
+	__try
+	{
+		CCommandLine::Execute(_T("taskkill /f /im chrome.exe"), TRUE, TRUE, NULL);
+
+		// C:\Users\Administrator\AppData\Local
+		if (!SHGetSpecialFolderPath(NULL, tchLocal, CSIDL_LOCAL_APPDATA, FALSE))
+			__leave;
+
+		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Google\\Chrome\\User Data"), tchLocal);
+		CDirectoryControl::Delete(tchPath);
+	}
+	__finally
+	{
+		;
+	}
+
+	return;
 }
