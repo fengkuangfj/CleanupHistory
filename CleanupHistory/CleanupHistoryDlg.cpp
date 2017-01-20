@@ -599,23 +599,8 @@ void CCleanupHistoryDlg::OnBnClickedQQ()
 		if (!SHGetSpecialFolderPath(NULL, tchDirRoaming, CSIDL_APPDATA, FALSE))
 			__leave;
 
-		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent\\QQ\\Misc\\com.tencent.gamelife\\QQGameLife\\%s"), tchDirRoaming, tchQQ);
-		CDirectoryControl::Delete(tchPath);
-
-		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent\\QQ\\SNS\\Com.Tencent.PersonalCard\\%s"), tchDirRoaming, tchQQ);
-		CDirectoryControl::Delete(tchPath);
-
-		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent\\QQ\\webkit_cache\\%s"), tchDirRoaming, tchQQ);
-		CDirectoryControl::Delete(tchPath);
-
-		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent\\QQMiniDL\\%s"), tchDirRoaming, tchQQ);
-		CDirectoryControl::Delete(tchPath);
-
-		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent\\Users\\%s"), tchDirRoaming, tchQQ);
-		CDirectoryControl::Delete(tchPath);
-
-		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent\\QQ\\webkit_cache\\%s_medalwall"), tchDirRoaming, tchQQ);
-		CDirectoryControl::Delete(tchPath);
+		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent"), tchDirRoaming);
+		CDirectoryControl::DeleteInternalDir(tchPath, tchQQ, FALSE);
 
 		// C:\ProgramData
 		if (!SHGetSpecialFolderPath(NULL, tchDirProgramData, CSIDL_COMMON_APPDATA, FALSE))
