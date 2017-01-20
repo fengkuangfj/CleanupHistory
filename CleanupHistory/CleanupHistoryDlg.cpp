@@ -623,23 +623,8 @@ void CCleanupHistoryDlg::OnBnClickedQQ()
 		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent Files\\All Users\\QQ\\Misc"), tchDirDocuments);
 		CDirectoryControl::DeleteInternalFile(tchPath, tchQQ, TRUE);
 
-		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent Files\\All Users\\QQ\\History.db"), tchDirDocuments);
-		DeleteFile(tchPath);
-
-		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent Files\\All Users\\QQ\\Perfre.db"), tchDirDocuments);
-		DeleteFile(tchPath);
-
-		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent Files\\All Users\\QQ\\Registry.db"), tchDirDocuments);
-		DeleteFile(tchPath);
-
-		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent Files\\All Users\\QQ\\Registry2.0.db"), tchDirDocuments);
-		DeleteFile(tchPath);
-
-		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent Files\\All Users\\QQ\\Registry2.0.db-journal"), tchDirDocuments);
-		DeleteFile(tchPath);
-
-		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent Files\\All Users\\QQ\\RegistryLite.db"), tchDirDocuments);
-		DeleteFile(tchPath);
+		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent Files\\All Users\\QQ"), tchDirDocuments);
+		CDirectoryControl::DeleteInternalFile(tchPath, _T(".db"), TRUE);
 
 		// ×¢²á±í
 		StringCchPrintf(tchPath, _countof(tchPath), _T("SOFTWARE\\Tencent\\Plugin\\VAS\\%s"), tchQQ);
