@@ -635,14 +635,8 @@ void CCleanupHistoryDlg::OnBnClickedQQ()
 		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent\\QQ\\Misc\\%s"), tchDirRoaming, tchQQ);
 		DeleteFile(tchPath);
 
-		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent Files\\All Users\\QQ\\Misc\\com.tencent.qqshow\\qqshow6\\qqshow_%s.jpg"), tchDirDocuments, tchQQ);
-		DeleteFile(tchPath);
-
-		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent Files\\All Users\\QQ\\Misc\\com.tencent.qqshow\\xml6\\%s.xml"), tchDirDocuments, tchQQ);
-		DeleteFile(tchPath);
-
-		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent Files\\All Users\\QQ\\Misc\\com.tencent.qqshow\\xml6\\%s_f.xml"), tchDirDocuments, tchQQ);
-		DeleteFile(tchPath);
+		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent Files\\All Users\\QQ\\Misc"), tchDirDocuments);
+		CDirectoryControl::DeleteInternalFile(tchPath, tchQQ, TRUE);
 
 		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent Files\\All Users\\QQ\\History.db"), tchDirDocuments);
 		DeleteFile(tchPath);
