@@ -46,6 +46,7 @@ BEGIN_MESSAGE_MAP(CCleanupHistoryDlg, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON16, &CCleanupHistoryDlg::OnBnClickedTelNet)
 	ON_BN_CLICKED(IDC_BUTTON17, &CCleanupHistoryDlg::OnBnClickedQQ)
 	ON_BN_CLICKED(IDC_BUTTON18, &CCleanupHistoryDlg::OnBnClickedRTX)
+	ON_BN_CLICKED(IDC_BUTTON19, &CCleanupHistoryDlg::OnBnClickedFoxmail)
 END_MESSAGE_MAP()
 
 // CCleanupHistoryDlg 消息处理程序
@@ -738,10 +739,81 @@ void CCleanupHistoryDlg::OnBnClickedRTX()
 	return;
 }
 
-// 目录
-// C:\Users\Administrator\AppData\Roaming\Foxmail7
-// D:\Program Files\Foxmail 7.2\Storage\yuexiang@huatusoft.com
+void CCleanupHistoryDlg::OnBnClickedFoxmail()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	LSTATUS lStatus = ERROR_SUCCESS;
+	DWORD	dwType = 0;
+	TCHAR	tchInstDir[MAX_PATH] = {0};
+	TCHAR	tchDirRoaming[MAX_PATH] = {0};
+	DWORD	dwInstDirSizeB = 0;
+	TCHAR	tchEmail[MAX_PATH] = {0};
+	TCHAR	tchPath[MAX_PATH] = {0};
+	TCHAR	tchVersion[MAX_PATH] = {0};
+	LPTSTR	lpPosition = NULL;
 
-// 文件
-// D:\Program Files\Foxmail 7.2\Global\domain.ini
 
+	__try
+	{
+		StringCchPrintf(tchEmail, _countof(tchEmail), _T("yuexiang@huatusoft.com"));
+
+		CCommandLine::Execute(_T("taskkill /f /im foxmail.exe"), TRUE, TRUE, NULL);
+
+		// 目录
+
+		// C:\Users\Administrator\AppData\Roaming
+		if (!SHGetSpecialFolderPath(NULL, tchDirRoaming, CSIDL_APPDATA, FALSE))
+			__leave;
+
+		dwInstDirSizeB = sizeof(tchInstDir);
+		lStatus = SHRegGetValue(
+			HKEY_CURRENT_USER,
+			_T("Software\\Aerofox\\FoxmailPreview"),
+			_T("Executable"),
+			SRRF_RT_REG_SZ,
+			&dwType,
+			tchInstDir,
+			&dwInstDirSizeB
+			);
+		if (ERROR_SUCCESS == lStatus)
+		{
+			if (PathRemoveFileSpec(tchInstDir))
+			{
+				StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Storage\\%s"), tchInstDir, tchEmail);
+				CDirectoryControl::Delete(tchPath);
+			}
+
+			lpPosition = PathFindFileName(tchInstDir);
+			if (lpPosition)
+			{
+				StringCchPrintf(tchVersion, _countof(tchVersion), lpPosition);
+
+				lpPosition = StrRChr(tchVersion, NULL, _T(' '));
+				if (lpPosition)
+				{
+					StringCchPrintf(tchVersion, _countof(tchVersion), lpPosition + 1);
+
+					lpPosition = StrRChr(tchVersion, NULL, _T('.'));
+					if (lpPosition)
+					{
+						*lpPosition = _T('\0');
+
+						StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Foxmail%s"), tchDirRoaming, tchVersion);
+						CDirectoryControl::Empty(tchPath);
+					}
+				}
+			}
+		}
+
+		// 文件
+		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Global\\domain.ini"), tchInstDir);
+		DeleteFile(tchPath);
+	}
+	__finally
+	{
+		;
+	}
+
+	return;
+
+}
