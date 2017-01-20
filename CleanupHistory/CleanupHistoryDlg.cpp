@@ -644,6 +644,24 @@ void CCleanupHistoryDlg::OnBnClickedQQ()
 		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent Files\\All Users\\QQ\\Misc\\com.tencent.qqshow\\xml6\\%s_f.xml"), tchDirDocuments, tchQQ);
 		DeleteFile(tchPath);
 
+		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent Files\\All Users\\QQ\\History.db"), tchDirDocuments);
+		DeleteFile(tchPath);
+
+		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent Files\\All Users\\QQ\\Perfre.db"), tchDirDocuments);
+		DeleteFile(tchPath);
+
+		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent Files\\All Users\\QQ\\Registry.db"), tchDirDocuments);
+		DeleteFile(tchPath);
+
+		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent Files\\All Users\\QQ\\Registry2.0.db"), tchDirDocuments);
+		DeleteFile(tchPath);
+
+		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent Files\\All Users\\QQ\\Registry2.0.db-journal"), tchDirDocuments);
+		DeleteFile(tchPath);
+
+		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent Files\\All Users\\QQ\\RegistryLite.db"), tchDirDocuments);
+		DeleteFile(tchPath);
+
 		// 注册表
 		StringCchPrintf(tchPath, _countof(tchPath), _T("SOFTWARE\\Tencent\\Plugin\\VAS\\%s"), tchQQ);
 		SHDeleteKey(HKEY_CURRENT_USER, tchPath);
@@ -755,3 +773,11 @@ void CCleanupHistoryDlg::OnBnClickedRTX()
 
 	return;
 }
+
+// 目录
+// C:\Users\Administrator\AppData\Roaming\Foxmail7
+// D:\Program Files\Foxmail 7.2\Storage\yuexiang@huatusoft.com
+
+// 文件
+// D:\Program Files\Foxmail 7.2\Global\domain.ini
+
