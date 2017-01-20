@@ -781,25 +781,25 @@ void CCleanupHistoryDlg::OnBnClickedFoxmail()
 			{
 				StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Storage\\%s"), tchInstDir, tchEmail);
 				CDirectoryControl::Delete(tchPath);
-			}
 
-			lpPosition = PathFindFileName(tchInstDir);
-			if (lpPosition)
-			{
-				StringCchPrintf(tchVersion, _countof(tchVersion), lpPosition);
-
-				lpPosition = StrRChr(tchVersion, NULL, _T(' '));
+				lpPosition = PathFindFileName(tchInstDir);
 				if (lpPosition)
 				{
-					StringCchPrintf(tchVersion, _countof(tchVersion), lpPosition + 1);
+					StringCchPrintf(tchVersion, _countof(tchVersion), lpPosition);
 
-					lpPosition = StrRChr(tchVersion, NULL, _T('.'));
+					lpPosition = StrRChr(tchVersion, NULL, _T(' '));
 					if (lpPosition)
 					{
-						*lpPosition = _T('\0');
+						StringCchPrintf(tchVersion, _countof(tchVersion), lpPosition + 1);
 
-						StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Foxmail%s"), tchDirRoaming, tchVersion);
-						CDirectoryControl::Empty(tchPath);
+						lpPosition = StrRChr(tchVersion, NULL, _T('.'));
+						if (lpPosition)
+						{
+							*lpPosition = _T('\0');
+
+							StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Foxmail%s"), tchDirRoaming, tchVersion);
+							CDirectoryControl::Empty(tchPath);
+						}
 					}
 				}
 			}
