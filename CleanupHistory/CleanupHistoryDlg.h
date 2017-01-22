@@ -51,4 +51,5 @@ public:
 	afx_msg void OnBnClickedGoogleChrome();
 	afx_msg void OnBnClickedYoudaoDict();
 	afx_msg void OnBnClickedThunder();
+	afx_msg void OnBnClickedXmp();
 };

@@ -50,6 +50,7 @@ BEGIN_MESSAGE_MAP(CCleanupHistoryDlg, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON20, &CCleanupHistoryDlg::OnBnClickedGoogleChrome)
 	ON_BN_CLICKED(IDC_BUTTON21, &CCleanupHistoryDlg::OnBnClickedYoudaoDict)
 	ON_BN_CLICKED(IDC_BUTTON22, &CCleanupHistoryDlg::OnBnClickedThunder)
+	ON_BN_CLICKED(IDC_BUTTON23, &CCleanupHistoryDlg::OnBnClickedXmp)
 END_MESSAGE_MAP()
 
 // CCleanupHistoryDlg 消息处理程序
@@ -599,21 +600,30 @@ void CCleanupHistoryDlg::OnBnClickedQQ()
 
 		// C:\Users\Administrator\AppData\Roaming
 		if (!SHGetSpecialFolderPath(NULL, tchDirRoaming, CSIDL_APPDATA, FALSE))
+		{
+			CSimpleLogSR(MOD_CLEANUP_HISTORY_DLG, LOG_LEVEL_ERROR, "SHGetSpecialFolderPath failed. (%d)", GetLastError());
 			__leave;
+		}
 
 		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent"), tchDirRoaming);
 		CDirectoryControl::DeleteInternalDir(tchPath, tchAccount, FALSE);
 
 		// C:\ProgramData
 		if (!SHGetSpecialFolderPath(NULL, tchDirProgramData, CSIDL_COMMON_APPDATA, FALSE))
+		{
+			CSimpleLogSR(MOD_CLEANUP_HISTORY_DLG, LOG_LEVEL_ERROR, "SHGetSpecialFolderPath failed. (%d)", GetLastError());
 			__leave;
+		}
 
 		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent\\QQProtect\\Qscan\\%s"), tchDirProgramData, tchAccount);
 		CDirectoryControl::Delete(tchPath);
 
 		// D:\My Documents
 		if (!SHGetSpecialFolderPath(NULL, tchDirDocuments, CSIDL_MYDOCUMENTS, FALSE))
+		{
+			CSimpleLogSR(MOD_CLEANUP_HISTORY_DLG, LOG_LEVEL_ERROR, "SHGetSpecialFolderPath failed. (%d)", GetLastError());
 			__leave;
+		}
 
 		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent Files\\%s"), tchDirDocuments, tchAccount);
 		CDirectoryControl::Delete(tchPath);
@@ -666,7 +676,10 @@ void CCleanupHistoryDlg::OnBnClickedRTX()
 
 		// D:\My Documents
 		if (!SHGetSpecialFolderPath(NULL, tchDirDocuments, CSIDL_MYDOCUMENTS, FALSE))
+		{
+			CSimpleLogSR(MOD_CLEANUP_HISTORY_DLG, LOG_LEVEL_ERROR, "SHGetSpecialFolderPath failed. (%d)", GetLastError());
 			__leave;
+		}
 
 		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\My RTX Files\\%s"), tchDirDocuments, tchAccount);
 		CDirectoryControl::Delete(tchPath);
@@ -678,11 +691,11 @@ void CCleanupHistoryDlg::OnBnClickedRTX()
 			StringCchPrintf(tchSubKey, _countof(tchSubKey), _T("SOFTWARE\\Tencent\\RTXC"));
 
 		dwDataBufSizeB = sizeof(tchInstDir);
-		lStatus = SHRegGetValue(
+		lStatus = RegGetValue(
 			HKEY_LOCAL_MACHINE,
 			tchSubKey,
 			_T("INSTDIR"),
-			SRRF_RT_REG_SZ,
+			RRF_RT_REG_SZ,
 			&dwType,
 			tchInstDir,
 			&dwDataBufSizeB
@@ -763,14 +776,17 @@ void CCleanupHistoryDlg::OnBnClickedFoxmail()
 
 		// C:\Users\Administrator\AppData\Roaming
 		if (!SHGetSpecialFolderPath(NULL, tchDirRoaming, CSIDL_APPDATA, FALSE))
+		{
+			CSimpleLogSR(MOD_CLEANUP_HISTORY_DLG, LOG_LEVEL_ERROR, "SHGetSpecialFolderPath failed. (%d)", GetLastError());
 			__leave;
+		}
 
 		dwInstDirSizeB = sizeof(tchInstDir);
-		lStatus = SHRegGetValue(
+		lStatus = RegGetValue(
 			HKEY_CURRENT_USER,
 			_T("Software\\Aerofox\\FoxmailPreview"),
 			_T("Executable"),
-			SRRF_RT_REG_SZ,
+			RRF_RT_REG_SZ,
 			&dwType,
 			tchInstDir,
 			&dwInstDirSizeB
@@ -839,7 +855,10 @@ void CCleanupHistoryDlg::OnBnClickedGoogleChrome()
 
 		// C:\Users\Administrator\AppData\Local
 		if (!SHGetSpecialFolderPath(NULL, tchLocal, CSIDL_LOCAL_APPDATA, FALSE))
+		{
+			CSimpleLogSR(MOD_CLEANUP_HISTORY_DLG, LOG_LEVEL_ERROR, "SHGetSpecialFolderPath failed. (%d)", GetLastError());
 			__leave;
+		}
 
 		StringCchPrintf(tchPreferences, _countof(tchPreferences), _T("%s\\Google\\Chrome\\User Data\\Default\\Preferences"), tchLocal);
 
@@ -946,7 +965,10 @@ void CCleanupHistoryDlg::OnBnClickedYoudaoDict()
 
 		// C:\Users\Administrator\AppData\Local
 		if (!SHGetSpecialFolderPath(NULL, tchLocal, CSIDL_LOCAL_APPDATA, FALSE))
+		{
+			CSimpleLogSR(MOD_CLEANUP_HISTORY_DLG, LOG_LEVEL_ERROR, "SHGetSpecialFolderPath failed. (%d)", GetLastError());
 			__leave;
+		}
 
 		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Yodao\\DeskDict\\WbData\\%s"), tchLocal, tchAccount);
 		CDirectoryControl::Delete(tchPath);
@@ -984,11 +1006,11 @@ void CCleanupHistoryDlg::OnBnClickedThunder()
 
 		// 目录
 		dwInstDirSizeB = sizeof(tchInstDir);
-		lStatus = SHRegGetValue(
+		lStatus = RegGetValue(
 			HKEY_CURRENT_USER,
 			_T("Software\\Thunder Network\\Thunder"),
 			_T("Path"),
-			SRRF_RT_REG_SZ,
+			RRF_RT_REG_SZ,
 			&dwType,
 			tchInstDir,
 			&dwInstDirSizeB
@@ -1019,6 +1041,85 @@ void CCleanupHistoryDlg::OnBnClickedThunder()
 		StringCchPrintf(tchDir, _countof(tchDir), _T("C:\\迅雷下载"));
 		for (; *tchDir <= _T('Z'); (*tchDir)++)
 			CDirectoryControl::Delete(tchDir);
+	}
+	__finally
+	{
+		;
+	}
+
+	return;
+}
+
+void CCleanupHistoryDlg::OnBnClickedXmp()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	LSTATUS	lStatus = ERROR_SUCCESS;
+	DWORD	dwType = 0;
+	TCHAR	tchInstDir[MAX_PATH] = {0};
+	DWORD	dwInstDirSizeB = 0;
+	TCHAR	tchDir[MAX_PATH] = {0};
+	TCHAR	tchTemp[MAX_PATH] = {0};
+
+
+	__try
+	{
+		CCommandLine::Execute(_T("taskkill /f /im xmp.exe"), TRUE, TRUE, NULL);
+
+		// 目录
+
+		// C:\Users\Administrator\AppData\Local\Temp
+		if (!GetTempPath(_countof(tchTemp), tchTemp))
+		{
+			CSimpleLogSR(MOD_CLEANUP_HISTORY_DLG, LOG_LEVEL_ERROR, "GetTempPath failed. (%d)", GetLastError());
+			__leave;
+		}
+
+		StringCchPrintf(tchDir, _countof(tchDir), _T("%sxmp"), tchTemp);
+		CDirectoryControl::Delete(tchDir);
+
+		dwInstDirSizeB = sizeof(tchInstDir);
+		lStatus = RegGetValue(
+			HKEY_LOCAL_MACHINE,
+			_T("SOFTWARE\\Wow6432Node\\Thunder Network\\Xmp"),
+			_T("CoreDir"),
+			RRF_RT_REG_SZ,
+			&dwType,
+			tchInstDir,
+			&dwInstDirSizeB
+			);
+		if (ERROR_SUCCESS == lStatus)
+		{
+			if (PathRemoveFileSpec(tchInstDir))
+			{
+				StringCchPrintf(tchDir, _countof(tchDir), _T("%s\\ProgramData"), tchInstDir);
+				CDirectoryControl::Delete(tchDir);
+			}
+		}
+
+		StringCchPrintf(tchDir, _countof(tchDir), _T("C:\\xmpcache"));
+		for (; *tchDir <= _T('Z'); (*tchDir)++)
+			CDirectoryControl::Delete(tchDir);
+
+		dwInstDirSizeB = sizeof(tchInstDir);
+		lStatus = RegGetValue(
+			HKEY_LOCAL_MACHINE,
+			_T("SOFTWARE\\Wow6432Node\\Thunder Network\\Xmp"),
+			_T("StorePath"),
+			RRF_RT_REG_SZ,
+			&dwType,
+			tchDir,
+			&dwInstDirSizeB
+			);
+		if (ERROR_SUCCESS == lStatus)
+		{
+			CDirectoryControl::Delete(tchDir);
+
+			SHDeleteValue(
+				HKEY_LOCAL_MACHINE,
+				_T("SOFTWARE\\Wow6432Node\\Thunder Network\\Xmp"),
+				_T("StorePath")
+				);
+		}
 	}
 	__finally
 	{
