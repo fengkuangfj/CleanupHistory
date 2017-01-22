@@ -713,7 +713,6 @@ void CCleanupHistoryDlg::OnBnClickedRTX()
 					CDirectoryControl::Delete(tchPath);
 
 					StringCchPrintf(tchPathCfg, _countof(tchPathCfg), _T("%s\\RTXC File List\\%s\\Accounts\\rtx.cfg"), tchDirDocuments, tchInstDir);
-
 					if (GetPrivateProfileString(_T("Default"), _T("file_page_path"), _T(""), tchPath, _countof(tchPath), tchPathCfg))
 					{
 						StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\%s"), tchPath, tchAccount);
@@ -787,17 +786,14 @@ void CCleanupHistoryDlg::OnBnClickedFoxmail()
 				if (lpPosition)
 				{
 					StringCchPrintf(tchVersion, _countof(tchVersion), lpPosition);
-
 					lpPosition = StrRChr(tchVersion, NULL, _T(' '));
 					if (lpPosition)
 					{
 						StringCchPrintf(tchVersion, _countof(tchVersion), lpPosition + 1);
-
 						lpPosition = StrRChr(tchVersion, NULL, _T('.'));
 						if (lpPosition)
 						{
 							*lpPosition = _T('\0');
-
 							StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Foxmail%s"), tchDirRoaming, tchVersion);
 							CDirectoryControl::Empty(tchPath);
 						}
@@ -821,24 +817,106 @@ void CCleanupHistoryDlg::OnBnClickedFoxmail()
 void CCleanupHistoryDlg::OnBnClickedGoogleChrome()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	TCHAR tchLocal[MAX_PATH] = {0};
-	TCHAR tchPath[MAX_PATH] = {0};
+	TCHAR			tchLocal[MAX_PATH] = {0};
+	TCHAR			tchPreferences[MAX_PATH] = {0};
+	HANDLE			hFile = INVALID_HANDLE_VALUE;
+	LARGE_INTEGER 	liFileSize = {0};
+	LPSTR			lpstrData = NULL;
+	DWORD			dwReaded = 0;
+	LPTSTR			lptstrData = NULL;
+	ULONG			ultchPathSizeCh = 0;
+	LPTSTR			lpPathBegin = NULL;
+	LPTSTR			lpPathEnd = NULL;
+	TCHAR			tchPath[MAX_PATH] = {0};
+	TCHAR			tchUser[MAX_PATH] = {0};
 
 
 	__try
 	{
-		CCommandLine::Execute(_T("taskkill /f /im chrome.exe"), TRUE, TRUE, NULL);
+		// CCommandLine::Execute(_T("taskkill /f /im chrome.exe"), TRUE, TRUE, NULL);
+
+		// 目录
 
 		// C:\Users\Administrator\AppData\Local
 		if (!SHGetSpecialFolderPath(NULL, tchLocal, CSIDL_LOCAL_APPDATA, FALSE))
 			__leave;
 
+		StringCchPrintf(tchPreferences, _countof(tchPreferences), _T("%s\\Google\\Chrome\\User Data\\Default\\Preferences"), tchLocal);
+
+		hFile = CreateFile(
+			tchPreferences,
+			GENERIC_READ,
+			FILE_SHARE_READ,
+			NULL,
+			OPEN_EXISTING,
+			FILE_ATTRIBUTE_NORMAL,
+			NULL			
+			);
+		if (INVALID_HANDLE_VALUE != hFile)
+		{
+			if (GetFileSizeEx(hFile, &liFileSize))
+			{
+				lpstrData = (LPSTR)calloc(1, liFileSize.QuadPart);
+				if (lpstrData)
+				{
+					if (ReadFile(
+						hFile,
+						lpstrData,
+						liFileSize.QuadPart,
+						&dwReaded,
+						NULL
+						))
+					{
+						if (!CStringInternal::ASCIIToUNICODE(lptstrData, &ultchPathSizeCh, lpstrData, CP_UTF8))
+						{
+							if (ultchPathSizeCh)
+							{
+								lptstrData = (LPTSTR)calloc(1, ultchPathSizeCh * sizeof(TCHAR));
+								if (lptstrData)
+								{
+									if (CStringInternal::ASCIIToUNICODE(lptstrData, &ultchPathSizeCh, lpstrData, CP_UTF8))
+									{
+										lpPathBegin = StrStr(lptstrData, _T("\"download\":{\"default_directory\":\""));
+										if (lpPathBegin)
+										{
+											lpPathBegin += _tcslen(_T("\"download\":{\"default_directory\":\""));
+											lpPathEnd = StrStr(lpPathBegin, _T("\""));
+											*lpPathEnd = _T('\0');
+											StringCchPrintf(tchPath, _countof(tchPath), _T("%s"), lpPathBegin);
+											CDirectoryControl::Delete(tchPath);
+										}
+									}
+								}
+							}	
+						}						
+					}
+				}
+			}
+		}		
+
 		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Google\\Chrome\\User Data"), tchLocal);
-		CDirectoryControl::Delete(tchPath);
+		CDirectoryControl::Delete(tchPath);		
+
+		StringCchPrintf(tchUser, _countof(tchUser), _T("%s"), tchLocal);
+		if (PathRemoveFileSpec(tchUser))
+		{
+			if (PathRemoveFileSpec(tchUser))
+			{
+				StringCchPrintf(tchUser, _countof(tchUser), _T("%s\\Downloads"), tchUser);
+				CDirectoryControl::Delete(tchUser);
+			}
+		}
 	}
 	__finally
 	{
-		;
+		if (lptstrData)
+			free(lptstrData);
+
+		if (lpstrData)
+			free(lpstrData);
+
+		if (INVALID_HANDLE_VALUE != hFile)
+			CloseHandle(hFile);
 	}
 
 	return;
