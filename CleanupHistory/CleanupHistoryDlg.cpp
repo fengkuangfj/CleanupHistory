@@ -48,6 +48,8 @@ BEGIN_MESSAGE_MAP(CCleanupHistoryDlg, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON18, &CCleanupHistoryDlg::OnBnClickedRTX)
 	ON_BN_CLICKED(IDC_BUTTON19, &CCleanupHistoryDlg::OnBnClickedFoxmail)
 	ON_BN_CLICKED(IDC_BUTTON20, &CCleanupHistoryDlg::OnBnClickedGoogleChrome)
+	ON_BN_CLICKED(IDC_BUTTON21, &CCleanupHistoryDlg::OnBnClickedYoudaoDict)
+	ON_BN_CLICKED(IDC_BUTTON22, &CCleanupHistoryDlg::OnBnClickedThunder)
 END_MESSAGE_MAP()
 
 // CCleanupHistoryDlg 消息处理程序
@@ -579,7 +581,7 @@ void CCleanupHistoryDlg::OnBnClickedTelNet()
 void CCleanupHistoryDlg::OnBnClickedQQ()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	TCHAR tchQQ[MAX_PATH] = {0};
+	TCHAR tchAccount[MAX_PATH] = {0};
 	TCHAR tchDirRoaming[MAX_PATH] = {0};
 	TCHAR tchDirProgramData[MAX_PATH] = {0};
 	TCHAR tchDirDocuments[MAX_PATH] = {0};
@@ -588,12 +590,10 @@ void CCleanupHistoryDlg::OnBnClickedQQ()
 
 	__try
 	{
-		StringCchPrintf(tchQQ, _countof(tchQQ), _T("464447966"));
+		StringCchPrintf(tchAccount, _countof(tchAccount), _T("464447966"));
 
-		CCommandLine::Execute(_T("taskkill /f /im qq.exe"), TRUE, TRUE, NULL);
 		CCommandLine::Execute(_T("taskkill /f /im qqprotect.exe"), TRUE, TRUE, NULL);
 		CCommandLine::Execute(_T("taskkill /f /im qq.exe"), TRUE, TRUE, NULL);
-		CCommandLine::Execute(_T("taskkill /f /im qqprotect.exe"), TRUE, TRUE, NULL);
 
 		// 目录
 
@@ -602,34 +602,34 @@ void CCleanupHistoryDlg::OnBnClickedQQ()
 			__leave;
 
 		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent"), tchDirRoaming);
-		CDirectoryControl::DeleteInternalDir(tchPath, tchQQ, FALSE);
+		CDirectoryControl::DeleteInternalDir(tchPath, tchAccount, FALSE);
 
 		// C:\ProgramData
 		if (!SHGetSpecialFolderPath(NULL, tchDirProgramData, CSIDL_COMMON_APPDATA, FALSE))
 			__leave;
 
-		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent\\QQProtect\\Qscan\\%s"), tchDirProgramData, tchQQ);
+		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent\\QQProtect\\Qscan\\%s"), tchDirProgramData, tchAccount);
 		CDirectoryControl::Delete(tchPath);
 
 		// D:\My Documents
 		if (!SHGetSpecialFolderPath(NULL, tchDirDocuments, CSIDL_MYDOCUMENTS, FALSE))
 			__leave;
 
-		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent Files\\%s"), tchDirDocuments, tchQQ);
+		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent Files\\%s"), tchDirDocuments, tchAccount);
 		CDirectoryControl::Delete(tchPath);
 
 		// 文件
-		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent\\QQ\\Misc\\%s"), tchDirRoaming, tchQQ);
+		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent\\QQ\\Misc\\%s"), tchDirRoaming, tchAccount);
 		DeleteFile(tchPath);
 
 		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent Files\\All Users\\QQ\\Misc"), tchDirDocuments);
-		CDirectoryControl::DeleteInternalFile(tchPath, tchQQ, TRUE);
+		CDirectoryControl::DeleteInternalFile(tchPath, tchAccount, TRUE);
 
 		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent Files\\All Users\\QQ"), tchDirDocuments);
 		CDirectoryControl::DeleteInternalFile(tchPath, _T(".db"), TRUE);
 
 		// 注册表
-		StringCchPrintf(tchPath, _countof(tchPath), _T("SOFTWARE\\Tencent\\Plugin\\VAS\\%s"), tchQQ);
+		StringCchPrintf(tchPath, _countof(tchPath), _T("SOFTWARE\\Tencent\\Plugin\\VAS\\%s"), tchAccount);
 		SHDeleteKey(HKEY_CURRENT_USER, tchPath);
 	}
 	__finally
@@ -747,7 +747,7 @@ void CCleanupHistoryDlg::OnBnClickedFoxmail()
 	TCHAR	tchInstDir[MAX_PATH] = {0};
 	TCHAR	tchDirRoaming[MAX_PATH] = {0};
 	DWORD	dwInstDirSizeB = 0;
-	TCHAR	tchEmail[MAX_PATH] = {0};
+	TCHAR	tchAccount[MAX_PATH] = {0};
 	TCHAR	tchPath[MAX_PATH] = {0};
 	TCHAR	tchVersion[MAX_PATH] = {0};
 	LPTSTR	lpPosition = NULL;
@@ -755,7 +755,7 @@ void CCleanupHistoryDlg::OnBnClickedFoxmail()
 
 	__try
 	{
-		StringCchPrintf(tchEmail, _countof(tchEmail), _T("yuexiang@huatusoft.com"));
+		StringCchPrintf(tchAccount, _countof(tchAccount), _T("yuexiang@huatusoft.com"));
 
 		CCommandLine::Execute(_T("taskkill /f /im foxmail.exe"), TRUE, TRUE, NULL);
 
@@ -779,7 +779,7 @@ void CCleanupHistoryDlg::OnBnClickedFoxmail()
 		{
 			if (PathRemoveFileSpec(tchInstDir))
 			{
-				StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Storage\\%s"), tchInstDir, tchEmail);
+				StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Storage\\%s"), tchInstDir, tchAccount);
 				CDirectoryControl::Delete(tchPath);
 
 				lpPosition = PathFindFileName(tchInstDir);
@@ -833,7 +833,7 @@ void CCleanupHistoryDlg::OnBnClickedGoogleChrome()
 
 	__try
 	{
-		// CCommandLine::Execute(_T("taskkill /f /im chrome.exe"), TRUE, TRUE, NULL);
+		CCommandLine::Execute(_T("taskkill /f /im chrome.exe"), TRUE, TRUE, NULL);
 
 		// 目录
 
@@ -920,6 +920,109 @@ void CCleanupHistoryDlg::OnBnClickedGoogleChrome()
 
 		if (INVALID_HANDLE_VALUE != hFile)
 			CloseHandle(hFile);
+	}
+
+	return;
+}
+
+void CCleanupHistoryDlg::OnBnClickedYoudaoDict()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	TCHAR tchAccount[MAX_PATH] = {0};
+	TCHAR tchLocal[MAX_PATH] = {0};
+	TCHAR tchPath[MAX_PATH] = {0};
+
+
+	__try
+	{
+		StringCchPrintf(tchAccount, _countof(tchAccount), _T("fly464447966@126.com"));
+
+		CCommandLine::Execute(_T("taskkill /f /im yodaodict.exe"), TRUE, TRUE, NULL);
+		CCommandLine::Execute(_T("taskkill /f /im youdaoie.exe"), TRUE, TRUE, NULL);
+		CCommandLine::Execute(_T("taskkill /f /im wordbook.exe"), TRUE, TRUE, NULL);
+		CCommandLine::Execute(_T("taskkill /f /im youdaodicthelper.exe"), TRUE, TRUE, NULL);
+
+		// 目录
+
+		// C:\Users\Administrator\AppData\Local
+		if (!SHGetSpecialFolderPath(NULL, tchLocal, CSIDL_LOCAL_APPDATA, FALSE))
+			__leave;
+
+		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Yodao\\DeskDict\\WbData\\%s"), tchLocal, tchAccount);
+		CDirectoryControl::Delete(tchPath);
+
+		// 文件
+		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Yodao\\DeskDict\\wordbookloginhistory.dat"), tchLocal);
+		DeleteFile(tchPath);
+	}
+	__finally
+	{
+		;
+	}
+
+	return;
+}
+
+void CCleanupHistoryDlg::OnBnClickedThunder()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	TCHAR	tchAccount[MAX_PATH] = {0};
+	LSTATUS	lStatus = ERROR_SUCCESS;
+	DWORD	dwType = 0;
+	TCHAR	tchInstDir[MAX_PATH] = {0};
+	DWORD	dwInstDirSizeB = 0;
+	TCHAR	tchDir[MAX_PATH] = {0};
+	TCHAR	tchNewTask[MAX_PATH] = {0};
+
+
+	__try
+	{
+		StringCchPrintf(tchAccount, _countof(tchAccount), _T("fengkuangfj"));
+
+		CCommandLine::Execute(_T("taskkill /f /im thunder.exe"), TRUE, TRUE, NULL);
+		CCommandLine::Execute(_T("taskkill /f /im thunderbrowser.exe"), TRUE, TRUE, NULL);
+
+		// 目录
+		dwInstDirSizeB = sizeof(tchInstDir);
+		lStatus = SHRegGetValue(
+			HKEY_CURRENT_USER,
+			_T("Software\\Thunder Network\\Thunder"),
+			_T("Path"),
+			SRRF_RT_REG_SZ,
+			&dwType,
+			tchInstDir,
+			&dwInstDirSizeB
+			);
+		if (ERROR_SUCCESS == lStatus)
+		{
+			if (PathRemoveFileSpec(tchInstDir))
+			{
+				if (PathRemoveFileSpec(tchInstDir))
+				{
+					StringCchPrintf(tchNewTask, _countof(tchNewTask), _T("%s\\Profiles\\newtask.ini"), tchInstDir);
+					if (GetPrivateProfileString(_T("TaskDefaultSettings"), _T("DefaultPath"), _T(""), tchDir, _countof(tchDir), tchNewTask))
+					{
+						if (_T('\\') == *(tchDir + _tcslen(tchDir) - 1))
+							*(tchDir + _tcslen(tchDir) - 1) = _T('\0');
+
+						CDirectoryControl::Delete(tchDir);
+
+						WritePrivateProfileString(_T("TaskDefaultSettings"), _T("DefaultPath"), _T(""), tchNewTask);
+					}
+
+					StringCchPrintf(tchDir, _countof(tchDir), _T("%s\\Profiles"), tchInstDir);
+					CDirectoryControl::Delete(tchDir);
+				}
+			}
+		}
+
+		StringCchPrintf(tchDir, _countof(tchDir), _T("C:\\迅雷下载"));
+		for (; *tchDir <= _T('Z'); (*tchDir)++)
+			CDirectoryControl::Delete(tchDir);
+	}
+	__finally
+	{
+		;
 	}
 
 	return;
