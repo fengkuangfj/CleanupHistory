@@ -881,9 +881,12 @@ void CCleanupHistoryDlg::OnBnClickedGoogleChrome()
 										{
 											lpPathBegin += _tcslen(_T("\"download\":{\"default_directory\":\""));
 											lpPathEnd = StrStr(lpPathBegin, _T("\""));
-											*lpPathEnd = _T('\0');
-											StringCchPrintf(tchPath, _countof(tchPath), _T("%s"), lpPathBegin);
-											CDirectoryControl::Delete(tchPath);
+											if (lpPathEnd)
+											{
+												*lpPathEnd = _T('\0');
+												StringCchPrintf(tchPath, _countof(tchPath), _T("%s"), lpPathBegin);
+												CDirectoryControl::Delete(tchPath);
+											}
 										}
 									}
 								}
