@@ -51,6 +51,7 @@ BEGIN_MESSAGE_MAP(CCleanupHistoryDlg, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON21, &CCleanupHistoryDlg::OnBnClickedYoudaoDict)
 	ON_BN_CLICKED(IDC_BUTTON22, &CCleanupHistoryDlg::OnBnClickedThunder)
 	ON_BN_CLICKED(IDC_BUTTON23, &CCleanupHistoryDlg::OnBnClickedXmp)
+	ON_BN_CLICKED(IDC_BUTTON24, &CCleanupHistoryDlg::OnBnClickedYoudaoNote)
 END_MESSAGE_MAP()
 
 // CCleanupHistoryDlg 消息处理程序
@@ -1120,6 +1121,47 @@ void CCleanupHistoryDlg::OnBnClickedXmp()
 				_T("StorePath")
 				);
 		}
+	}
+	__finally
+	{
+		;
+	}
+
+	return;
+}
+
+void CCleanupHistoryDlg::OnBnClickedYoudaoNote()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	TCHAR tchAccount[MAX_PATH] = {0};
+	TCHAR tchLocal[MAX_PATH] = {0};
+	TCHAR tchPath[MAX_PATH] = {0};
+
+
+	__try
+	{
+		StringCchPrintf(tchAccount, _countof(tchAccount), _T("fly464447966@126.com"));
+
+		CCommandLine::Execute(_T("taskkill /f /im youdaonote.exe"), TRUE, TRUE, NULL);
+		CCommandLine::Execute(_T("taskkill /f /im YNoteCefRender.exe"), TRUE, TRUE, NULL);
+
+		// C:\Users\Administrator\AppData\Local
+		if (!SHGetSpecialFolderPath(NULL, tchLocal, CSIDL_LOCAL_APPDATA, FALSE))
+		{
+			CSimpleLogSR(MOD_CLEANUP_HISTORY_DLG, LOG_LEVEL_ERROR, "SHGetSpecialFolderPath failed. (%d)", GetLastError());
+			__leave;
+		}
+
+		// 目录
+		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\YNote\\Data"), tchLocal);
+		CDirectoryControl::Empty(tchPath);
+
+		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\youdao\\ynote"), tchLocal);
+		CDirectoryControl::DeleteInternalFile(tchPath, tchAccount, TRUE);
+
+		// 文件
+		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\youdao\\ynote\\history15.dat"), tchLocal);
+		DeleteFile(tchPath);
 	}
 	__finally
 	{

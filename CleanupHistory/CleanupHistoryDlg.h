@@ -52,4 +52,5 @@ public:
 	afx_msg void OnBnClickedYoudaoDict();
 	afx_msg void OnBnClickedThunder();
 	afx_msg void OnBnClickedXmp();
+	afx_msg void OnBnClickedYoudaoNote();
 };
