@@ -1034,7 +1034,7 @@ void CCleanupHistoryDlg::OnBnClickedThunder()
 					}
 
 					StringCchPrintf(tchDir, _countof(tchDir), _T("%s\\Profiles"), tchInstDir);
-					CDirectoryControl::Delete(tchDir);
+					CDirectoryControl::EmptyExceptFile(tchDir, _T("Thunder.ico"), FALSE);
 				}
 			}
 		}
