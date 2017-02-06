@@ -1144,6 +1144,7 @@ void CCleanupHistoryDlg::OnBnClickedYoudaoNote()
 
 		CCommandLine::Execute(_T("taskkill /f /im youdaonote.exe"), TRUE, TRUE, NULL);
 		CCommandLine::Execute(_T("taskkill /f /im YNoteCefRender.exe"), TRUE, TRUE, NULL);
+		CCommandLine::Execute(_T("taskkill /f /im DocToPDF.exe"), TRUE, TRUE, NULL);
 
 		// C:\Users\Administrator\AppData\Local
 		if (!SHGetSpecialFolderPath(NULL, tchLocal, CSIDL_LOCAL_APPDATA, FALSE))
