@@ -1054,12 +1054,14 @@ void CCleanupHistoryDlg::OnBnClickedThunder()
 void CCleanupHistoryDlg::OnBnClickedXmp()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	LSTATUS	lStatus = ERROR_SUCCESS;
-	DWORD	dwType = 0;
-	TCHAR	tchInstDir[MAX_PATH] = {0};
-	DWORD	dwInstDirSizeB = 0;
-	TCHAR	tchDir[MAX_PATH] = {0};
-	TCHAR	tchTemp[MAX_PATH] = {0};
+	LSTATUS							lStatus = ERROR_SUCCESS;
+	DWORD							dwType = 0;
+	TCHAR							tchInstDir[MAX_PATH] = {0};
+	DWORD							dwInstDirSizeB = 0;
+	TCHAR							tchDir[MAX_PATH] = {0};
+	TCHAR							tchTemp[MAX_PATH] = {0};
+	OS_PROCESSOR_TYPE_USER_DEFINED	OsProcessorType = OS_PROCESSOR_TYPE_UNKNOWN;
+	TCHAR							tchSubKey[MAX_PATH] = {0};
 
 
 	__try
@@ -1078,10 +1080,16 @@ void CCleanupHistoryDlg::OnBnClickedXmp()
 		StringCchPrintf(tchDir, _countof(tchDir), _T("%sxmp"), tchTemp);
 		CDirectoryControl::Delete(tchDir);
 
+		OsProcessorType = COperationSystemVersion::GetInstance()->GetOSProcessorType();
+		if (OS_PROCESSOR_TYPE_X64 == OsProcessorType)
+			StringCchPrintf(tchSubKey, _countof(tchSubKey), _T("SOFTWARE\\Wow6432Node\\Thunder Network\\Xmp"));
+		else
+			StringCchPrintf(tchSubKey, _countof(tchSubKey), _T("SOFTWARE\\Thunder Network\\Xmp"));
+
 		dwInstDirSizeB = sizeof(tchInstDir);
 		lStatus = RegGetValue(
 			HKEY_LOCAL_MACHINE,
-			_T("SOFTWARE\\Wow6432Node\\Thunder Network\\Xmp"),
+			tchSubKey,
 			_T("CoreDir"),
 			RRF_RT_REG_SZ,
 			&dwType,
@@ -1104,7 +1112,7 @@ void CCleanupHistoryDlg::OnBnClickedXmp()
 		dwInstDirSizeB = sizeof(tchInstDir);
 		lStatus = RegGetValue(
 			HKEY_LOCAL_MACHINE,
-			_T("SOFTWARE\\Wow6432Node\\Thunder Network\\Xmp"),
+			tchSubKey,
 			_T("StorePath"),
 			RRF_RT_REG_SZ,
 			&dwType,
