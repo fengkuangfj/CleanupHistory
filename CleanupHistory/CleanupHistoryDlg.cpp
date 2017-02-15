@@ -1125,7 +1125,7 @@ void CCleanupHistoryDlg::OnBnClickedXmp()
 
 			SHDeleteValue(
 				HKEY_LOCAL_MACHINE,
-				_T("SOFTWARE\\Wow6432Node\\Thunder Network\\Xmp"),
+				tchSubKey,
 				_T("StorePath")
 				);
 		}
