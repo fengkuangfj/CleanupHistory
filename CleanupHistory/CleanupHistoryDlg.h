@@ -53,4 +53,12 @@ public:
 	afx_msg void OnBnClickedThunder();
 	afx_msg void OnBnClickedXmp();
 	afx_msg void OnBnClickedYoudaoNote();
+
+private:
+	BOOL
+		GetAccount(
+		__in	LPTSTR	lpKey,
+		__inout	LPTSTR	lpAccount,
+		__in	ULONG	ulSizeCh
+		);
 };

@@ -592,7 +592,8 @@ void CCleanupHistoryDlg::OnBnClickedQQ()
 
 	__try
 	{
-		StringCchPrintf(tchAccount, _countof(tchAccount), _T("464447966"));
+		if (!GetAccount(_T("QQ"), tchAccount, _countof(tchAccount)))
+			__leave;
 
 		CCommandLine::Execute(_T("taskkill /f /im qqprotect.exe"), TRUE, TRUE, NULL);
 		CCommandLine::Execute(_T("taskkill /f /im qq.exe"), TRUE, TRUE, NULL);
@@ -669,7 +670,8 @@ void CCleanupHistoryDlg::OnBnClickedRTX()
 
 	__try
 	{
-		StringCchPrintf(tchAccount, _countof(tchAccount), _T("yuexiang"));
+		if (!GetAccount(_T("RTX"), tchAccount, _countof(tchAccount)))
+			__leave;
 
 		CCommandLine::Execute(_T("taskkill /f /im rtx.exe"), TRUE, TRUE, NULL);
 
@@ -769,7 +771,8 @@ void CCleanupHistoryDlg::OnBnClickedFoxmail()
 
 	__try
 	{
-		StringCchPrintf(tchAccount, _countof(tchAccount), _T("yuexiang@huatusoft.com"));
+		if (!GetAccount(_T("Foxmail"), tchAccount, _countof(tchAccount)))
+			__leave;
 
 		CCommandLine::Execute(_T("taskkill /f /im foxmail.exe"), TRUE, TRUE, NULL);
 
@@ -955,7 +958,8 @@ void CCleanupHistoryDlg::OnBnClickedYoudaoDict()
 
 	__try
 	{
-		StringCchPrintf(tchAccount, _countof(tchAccount), _T("fly464447966@126.com"));
+		if (!GetAccount(_T("YoudaoDict"), tchAccount, _countof(tchAccount)))
+			__leave;
 
 		CCommandLine::Execute(_T("taskkill /f /im yodaodict.exe"), TRUE, TRUE, NULL);
 		CCommandLine::Execute(_T("taskkill /f /im youdaoie.exe"), TRUE, TRUE, NULL);
@@ -1000,7 +1004,8 @@ void CCleanupHistoryDlg::OnBnClickedThunder()
 
 	__try
 	{
-		StringCchPrintf(tchAccount, _countof(tchAccount), _T("fengkuangfj"));
+		if (!GetAccount(_T("Thunder"), tchAccount, _countof(tchAccount)))
+			__leave;
 
 		CCommandLine::Execute(_T("taskkill /f /im thunder.exe"), TRUE, TRUE, NULL);
 		CCommandLine::Execute(_T("taskkill /f /im thunderbrowser.exe"), TRUE, TRUE, NULL);
@@ -1148,7 +1153,8 @@ void CCleanupHistoryDlg::OnBnClickedYoudaoNote()
 
 	__try
 	{
-		StringCchPrintf(tchAccount, _countof(tchAccount), _T("fly464447966@126.com"));
+		if (!GetAccount(_T("YoudaoNote"), tchAccount, _countof(tchAccount)))
+			__leave;
 
 		CCommandLine::Execute(_T("taskkill /f /im youdaonote.exe"), TRUE, TRUE, NULL);
 		CCommandLine::Execute(_T("taskkill /f /im YNoteCefRender.exe"), TRUE, TRUE, NULL);
@@ -1178,4 +1184,49 @@ void CCleanupHistoryDlg::OnBnClickedYoudaoNote()
 	}
 
 	return;
+}
+
+BOOL
+CCleanupHistoryDlg::GetAccount(
+							   __in		LPTSTR	lpKey,
+							   __inout	LPTSTR	lpAccount,
+							   __in		ULONG	ulSizeCh
+							   )
+{
+	BOOL	bRet = FALSE;
+
+	TCHAR	tchPath[MAX_PATH] = {0};
+
+
+	__try
+	{
+		if (!lpKey || !lpAccount || !ulSizeCh)
+			__leave;
+
+		if (!CProcessControl::GetInstance()->Get(TRUE, 0, tchPath, _countof(tchPath)))
+			__leave;
+
+		if (!PathRemoveFileSpec(tchPath))
+			__leave;
+
+		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Account.ini"), tchPath);
+
+		if (!GetPrivateProfileString(
+			_T("Account"),
+			lpKey,
+			NULL,
+			lpAccount,
+			ulSizeCh,
+			tchPath
+			))
+			__leave;
+
+		bRet = TRUE;
+	}
+	__finally
+	{
+		;
+	}
+
+	return bRet;
 }
