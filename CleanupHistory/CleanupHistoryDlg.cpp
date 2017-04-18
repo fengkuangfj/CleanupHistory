@@ -52,6 +52,8 @@ BEGIN_MESSAGE_MAP(CCleanupHistoryDlg, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON22, &CCleanupHistoryDlg::OnBnClickedThunder)
 	ON_BN_CLICKED(IDC_BUTTON23, &CCleanupHistoryDlg::OnBnClickedXmp)
 	ON_BN_CLICKED(IDC_BUTTON24, &CCleanupHistoryDlg::OnBnClickedYoudaoNote)
+	ON_BN_CLICKED(IDC_BUTTON25, &CCleanupHistoryDlg::OnBnClicked360se)
+	ON_BN_CLICKED(IDC_BUTTON26, &CCleanupHistoryDlg::OnBnClicked360Safe)
 END_MESSAGE_MAP()
 
 // CCleanupHistoryDlg 消息处理程序
@@ -879,13 +881,13 @@ void CCleanupHistoryDlg::OnBnClickedGoogleChrome()
 		{
 			if (GetFileSizeEx(hFile, &liFileSize))
 			{
-				lpstrData = (LPSTR)calloc(1, liFileSize.QuadPart);
+				lpstrData = (LPSTR)calloc(1, (size_t)liFileSize.QuadPart);
 				if (lpstrData)
 				{
 					if (ReadFile(
 						hFile,
 						lpstrData,
-						liFileSize.QuadPart,
+						(DWORD)liFileSize.QuadPart,
 						&dwReaded,
 						NULL
 						))
@@ -1229,4 +1231,187 @@ CCleanupHistoryDlg::GetAccount(
 	}
 
 	return bRet;
+}
+
+void CCleanupHistoryDlg::OnBnClicked360se()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	TCHAR tchDirRoaming[MAX_PATH] = {0};
+	TCHAR tchLoginIni[MAX_PATH] = {0};
+	TCHAR tchDir[MAX_PATH] = {0};
+	ULONG ulVersion = 10;
+
+
+	__try
+	{
+		CCommandLine::Execute(_T("taskkill /f /im 360se.exe"), TRUE, TRUE, NULL);
+
+		// C:\Users\Administrator\AppData\Roaming
+		if (!SHGetSpecialFolderPath(NULL, tchDirRoaming, CSIDL_APPDATA, FALSE))
+		{
+			CSimpleLogSR(MOD_CLEANUP_HISTORY_DLG, LOG_LEVEL_ERROR, "SHGetSpecialFolderPath failed. (%d)", GetLastError());
+			__leave;
+		}
+
+		// 文件
+		StringCchPrintf(tchLoginIni, _countof(tchLoginIni), _T("%s\\360se\\apps\\data\\common\\Favorites\\OptionFav.ini"), tchDirRoaming);
+		if (!PathFileExists(tchLoginIni))
+		{
+			do 
+			{
+				StringCchPrintf(tchLoginIni, _countof(tchLoginIni), _T("%s\\360se%d\\apps\\data\\common\\Favorites\\OptionFav.ini"), tchDirRoaming, ulVersion--);
+				if (PathFileExists(tchLoginIni))
+				{
+					DeleteFile(tchLoginIni);
+					break;
+				}
+			} while (1 <= ulVersion);
+		}
+		else
+			DeleteFile(tchLoginIni);
+
+		StringCchPrintf(tchLoginIni, _countof(tchLoginIni), _T("%s\\360se\\apps\\data\\users\\login.ini"), tchDirRoaming);
+		if (!PathFileExists(tchLoginIni))
+		{
+			ulVersion = 10;
+			do 
+			{
+				StringCchPrintf(tchLoginIni, _countof(tchLoginIni), _T("%s\\360se%d\\apps\\data\\users\\login.ini"), tchDirRoaming, ulVersion--);
+				if (PathFileExists(tchLoginIni))
+				{
+					GetPrivateProfileString(
+						_T("NowLogin"),
+						_T("AppUserDataPath"),
+						NULL,
+						tchDir,
+						_countof(tchDir),
+						tchLoginIni
+						);
+					break;
+				}
+			} while (1 <= ulVersion);
+		}
+		else
+			GetPrivateProfileString(
+			_T("NowLogin"),
+			_T("AppUserDataPath"),
+			NULL,
+			tchDir,
+			_countof(tchDir),
+			tchLoginIni
+			);
+
+		// 目录
+		if (4 <= _tcslen(tchDir))
+		{
+			if (_T('\\') == *(tchDir + _tcslen(tchDir) - 1))
+				*(tchDir + _tcslen(tchDir) - 1) = _T('\0');
+
+			CDirectoryControl::Delete(tchDir);
+		}
+
+		// 文件
+		DeleteFile(tchLoginIni);
+	}
+	__finally
+	{
+		;
+	}
+
+	return;
+}
+
+void CCleanupHistoryDlg::OnBnClicked360Safe()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	TCHAR			tchDirRoaming[MAX_PATH] = {0};
+	TCHAR			tchDirExpression[MAX_PATH] = {0};
+	HANDLE			hFind = INVALID_HANDLE_VALUE;
+	WIN32_FIND_DATA ffd = { 0 };
+	TCHAR			tchPath[MAX_PATH] = {0};
+	ULONG			ulVersion = 10;
+	LSTATUS			lResult = ERROR_SUCCESS;
+
+
+	__try
+	{
+		CCommandLine::Execute(_T("taskkill /f /im 360Safe.exe"), TRUE, TRUE, NULL);
+
+		// 注册表
+		lResult = SHDeleteValue(
+			HKEY_CURRENT_USER,
+			_T("Software\\360safe"),
+			_T("IDLastedU")
+			);
+		if (ERROR_SUCCESS != lResult)
+		{
+			lResult = SHSetValue(
+				HKEY_CURRENT_USER,
+				_T("Software\\360safe"),
+				_T("IDLastedU"),
+				REG_SZ,
+				_T("\0"),
+				sizeof(TCHAR)
+				);
+		}
+
+		// C:\Users\Administrator\AppData\Roaming
+		if (!SHGetSpecialFolderPath(NULL, tchDirRoaming, CSIDL_APPDATA, FALSE))
+		{
+			CSimpleLogSR(MOD_CLEANUP_HISTORY_DLG, LOG_LEVEL_ERROR, "SHGetSpecialFolderPath failed. (%d)", GetLastError());
+			__leave;
+		}
+
+		// 目录
+		StringCchPrintf(tchDirExpression, _countof(tchDirExpression), _T("%s\\360Login\\*"), tchDirRoaming);
+
+		hFind = FindFirstFile(tchDirExpression, &ffd);
+		if (INVALID_HANDLE_VALUE == hFind)
+		{
+			printfEx(MOD_DIRECTORY_CONTROL, PRINTF_LEVEL_ERROR, "FindFirstFile failed. (%S) (%d)",
+				tchDirExpression, GetLastError());
+
+			__leave;
+		}
+
+		do
+		{
+			if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+			{
+				if (0 != _tcsnicmp(ffd.cFileName, _T("."), wcslen(_T("."))) &&
+					0 != _tcsnicmp(ffd.cFileName, _T(".."), wcslen(_T(".."))))
+				{
+					StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\360Login\\%s"), tchDirRoaming, ffd.cFileName);
+
+					if (0 != _tcsicmp(_T("safeid"), ffd.cFileName))
+					{
+						CDirectoryControl::Delete(tchPath);
+
+						StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\360Safe\\safeid\\safe\\%s"), tchDirRoaming, ffd.cFileName);
+						CDirectoryControl::Delete(tchPath);
+					}
+				}
+			}
+		} while (0 != FindNextFile(hFind, &ffd));
+
+		if (INVALID_HANDLE_VALUE != hFind)
+		{
+			FindClose(hFind);
+			hFind = INVALID_HANDLE_VALUE;
+		}
+
+		// 文件
+		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\360Login\\GlobleAccount.ini"), tchDirRoaming);
+		DeleteFile(tchPath);
+	}
+	__finally
+	{
+		if (INVALID_HANDLE_VALUE != hFind)
+		{
+			FindClose(hFind);
+			hFind = INVALID_HANDLE_VALUE;
+		}
+	}
+
+	return;
 }

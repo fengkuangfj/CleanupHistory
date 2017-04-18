@@ -28,6 +28,15 @@ protected:
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
+
+private:
+	BOOL
+		GetAccount(
+		__in	LPTSTR	lpKey,
+		__inout	LPTSTR	lpAccount,
+		__in	ULONG	ulSizeCh
+		);
+
 public:
 	afx_msg void OnBnClickedTemporaryInternetFiles();
 	afx_msg void OnBnClickedInternetCookies();
@@ -53,12 +62,6 @@ public:
 	afx_msg void OnBnClickedThunder();
 	afx_msg void OnBnClickedXmp();
 	afx_msg void OnBnClickedYoudaoNote();
-
-private:
-	BOOL
-		GetAccount(
-		__in	LPTSTR	lpKey,
-		__inout	LPTSTR	lpAccount,
-		__in	ULONG	ulSizeCh
-		);
+	afx_msg void OnBnClicked360se();
+	afx_msg void OnBnClicked360Safe();
 };
