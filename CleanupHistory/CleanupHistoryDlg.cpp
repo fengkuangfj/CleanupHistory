@@ -1223,6 +1223,9 @@ CCleanupHistoryDlg::GetAccount(
 			))
 			__leave;
 
+		if (!_tcslen(lpAccount))
+			__leave;
+
 		bRet = TRUE;
 	}
 	__finally
