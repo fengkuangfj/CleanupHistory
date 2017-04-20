@@ -55,6 +55,7 @@ BEGIN_MESSAGE_MAP(CCleanupHistoryDlg, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON25, &CCleanupHistoryDlg::OnBnClicked360se)
 	ON_BN_CLICKED(IDC_BUTTON26, &CCleanupHistoryDlg::OnBnClicked360Safe)
 	ON_BN_CLICKED(IDC_BUTTON27, &CCleanupHistoryDlg::OnBnClickedAll)
+	ON_BN_CLICKED(IDC_BUTTON28, &CCleanupHistoryDlg::OnBnClickedWeChat)
 END_MESSAGE_MAP()
 
 // CCleanupHistoryDlg 消息处理程序
@@ -893,14 +894,14 @@ void CCleanupHistoryDlg::OnBnClickedGoogleChrome()
 						NULL
 						))
 					{
-						if (!CStringInternal::ASCIIToUNICODE(lptstrData, &ultchPathSizeCh, lpstrData, CP_UTF8))
+						if (!CStringInternal::ASCIIToUNICODE(lptstrData, &ultchPathSizeCh, lpstrData, (ULONG)liFileSize.QuadPart, CP_UTF8))
 						{
 							if (ultchPathSizeCh)
 							{
 								lptstrData = (LPTSTR)calloc(1, ultchPathSizeCh * sizeof(TCHAR));
 								if (lptstrData)
 								{
-									if (CStringInternal::ASCIIToUNICODE(lptstrData, &ultchPathSizeCh, lpstrData, CP_UTF8))
+									if (CStringInternal::ASCIIToUNICODE(lptstrData, &ultchPathSizeCh, lpstrData, (ULONG)liFileSize.QuadPart, CP_UTF8))
 									{
 										lpPathBegin = StrStr(lptstrData, _T("\"download\":{\"default_directory\":\""));
 										if (lpPathBegin)
@@ -1449,6 +1450,124 @@ void CCleanupHistoryDlg::OnBnClickedAll()
 	OnBnClickedYoudaoNote();
 	OnBnClicked360se();
 	OnBnClicked360Safe();
+	OnBnClickedWeChat();
+
+	return;
+}
+
+void CCleanupHistoryDlg::OnBnClickedWeChat()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	TCHAR			tchDirDocuments[MAX_PATH] = {0};
+	TCHAR			tchDirAllUsers[MAX_PATH] = {0};
+	CHAR			chDirDocuments[MAX_PATH] = {0};
+	TCHAR			tchFileConfigData[MAX_PATH] = {0};
+	HANDLE			hFile = INVALID_HANDLE_VALUE;
+	LARGE_INTEGER	liFileSize = {0};
+	LPSTR			lpstrData = NULL;
+	DWORD			dwReaded = 0;
+	LPSTR			lpFileAccInfoDat = NULL;
+	CHAR			chFileAccInfoDat[MAX_PATH] = {0};
+	CHAR			chAccount[MAX_PATH] = {0};
+	TCHAR			tchAccount[MAX_PATH] = {0};
+	LPSTR			lpPosition = NULL;
+	TCHAR			tchDirAccount[MAX_PATH] = {0};
+	ULONG			ultchPathSizeCh = 0;
+
+
+	__try
+	{
+		CCommandLine::Execute(_T("taskkill /f /im WeChat.exe"), TRUE, TRUE, NULL);
+
+		// D:\My Documents
+		if (!SHGetSpecialFolderPath(NULL, tchDirDocuments, CSIDL_MYDOCUMENTS, FALSE))
+		{
+			CSimpleLogSR(MOD_CLEANUP_HISTORY_DLG, LOG_LEVEL_ERROR, "SHGetSpecialFolderPath failed. (%d)", GetLastError());
+			__leave;
+		}
+
+		// 文件
+		StringCchPrintf(tchDirAllUsers, _countof(tchDirAllUsers), _T("%s\\WeChat Files\\All Users"), tchDirDocuments);
+		CDirectoryControl::DeleteInternalFile(tchDirAllUsers, _T(".jpg"), TRUE);
+
+		// 目录
+		StringCchPrintf(tchFileConfigData, _countof(tchFileConfigData), _T("%s\\config\\config.data"), tchDirAllUsers);
+
+		hFile = CreateFile(
+			tchFileConfigData,
+			GENERIC_READ,
+			FILE_SHARE_READ,
+			NULL,
+			OPEN_EXISTING,
+			FILE_ATTRIBUTE_NORMAL,
+			NULL			
+			);
+		if (INVALID_HANDLE_VALUE == hFile)
+			__leave;
+
+		if (!GetFileSizeEx(hFile, &liFileSize))
+			__leave;
+
+		lpstrData = (LPSTR)calloc(1, (size_t)liFileSize.QuadPart);
+		if (!lpstrData)
+			__leave;
+
+		if (!ReadFile(
+			hFile,
+			lpstrData,
+			(DWORD)liFileSize.QuadPart,
+			&dwReaded,
+			NULL
+			))
+			__leave;
+
+		CloseHandle(hFile);
+		hFile = INVALID_HANDLE_VALUE;
+	
+		// D:\My Documents
+		if (!SHGetSpecialFolderPathA(NULL, chDirDocuments, CSIDL_MYDOCUMENTS, FALSE))
+		{
+			CSimpleLogSR(MOD_CLEANUP_HISTORY_DLG, LOG_LEVEL_ERROR, "SHGetSpecialFolderPath failed. (%d)", GetLastError());
+			__leave;
+		}
+
+		lpFileAccInfoDat = CStringInternal::Find(lpstrData, (ULONG)liFileSize.QuadPart / sizeof(CHAR), chDirDocuments, strlen(chDirDocuments));
+		if (!lpFileAccInfoDat)
+			__leave;
+
+		memcpy(chFileAccInfoDat, lpFileAccInfoDat, (size_t)liFileSize.QuadPart - (lpFileAccInfoDat - lpstrData) * sizeof(CHAR));
+		StringCchPrintfA(chAccount, _countof(chAccount), "%s", chFileAccInfoDat + strlen(chDirDocuments) + strlen("\\WeChat Files\\"));
+		lpPosition = StrChrA(chAccount, '\\');
+		if (!lpPosition)
+			__leave;
+
+		*lpPosition = '\0';
+
+		ultchPathSizeCh = _countof(tchAccount);
+		CStringInternal::ASCIIToUNICODE(tchAccount, &ultchPathSizeCh, chAccount, strlen(chAccount), CP_UTF8);
+		if (!ultchPathSizeCh)
+			__leave;
+
+		StringCchPrintf(tchDirAccount, _countof(tchDirAccount), _T("%s\\WeChat Files\\%s"), tchDirDocuments, tchAccount);
+		CDirectoryControl::Delete(tchDirAccount);
+
+		// 文件
+		DeleteFile(tchFileConfigData);
+	}
+	__finally
+	{
+		if (lpstrData)
+		{
+			free(lpstrData);
+			lpstrData = NULL;
+		}
+
+		if (INVALID_HANDLE_VALUE != hFile)	
+		{
+			CloseHandle(hFile);
+			hFile = INVALID_HANDLE_VALUE;
+		}
+	}
 
 	return;
 }
