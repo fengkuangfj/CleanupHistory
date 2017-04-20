@@ -59,6 +59,36 @@ BOOL CCleanupHistoryApp::InitInstance()
 
 	CCleanupHistoryDlg dlg;
 	m_pMainWnd = &dlg;
+
+	TCHAR tchWarning[MAX_PATH] = {0};
+	if (dlg.GetAccount(_T("Warning"), tchWarning, _countof(tchWarning)) &&
+		0 == _tcsicmp(_T("1"), tchWarning))
+		MessageBox(
+		NULL,
+		_T("清理各软件登录账号的以下信息：\
+		   \r1、用户名、密码\
+		   \r2、设置的下载目录下的所有文件\
+		   \r3、与账号相关的文件、目录\
+		   \r4、浏览过的网页、文件历史记录\
+		   \n\
+		   \rAccount.ini需与本exe同目录，格式如下\
+		   \r[Account]\
+		   \rQQ=464447966\
+		   \rRTX=yuexiang\
+		   \rFoxmail=yuexiang@huatusoft.com\
+		   \rYoudaoDict=fly464447966@126.com\
+		   \rThunder=fengkuangfj\
+		   \rYoudaoNote=fly464447966@126.com\
+		   \r360se=fly464447966@126.com\
+		   \n\
+		   \r注：\
+		   \r1、其他软件暂不支持或无需在Account.ini中设置账号\
+		   \r2、建议在出差完毕归还公用笔记本时使用(如果不想进行系统还原的话)\
+		   \r3、至于为什么要清理，你懂的"),
+		   _T("提示"),
+		   MB_OK
+		   );
+
 	INT_PTR nResponse = dlg.DoModal();
 	if (nResponse == IDOK)
 	{

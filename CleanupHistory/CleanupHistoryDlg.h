@@ -16,6 +16,13 @@ public:
 	// 对话框数据
 	enum { IDD = IDD_CLEANUPHISTORY_DIALOG };
 
+	BOOL
+		GetAccount(
+		__in	LPTSTR	lpKey,
+		__inout	LPTSTR	lpAccount,
+		__in	ULONG	ulSizeCh
+		);
+
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 支持
 
@@ -28,14 +35,6 @@ protected:
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
-
-private:
-	BOOL
-		GetAccount(
-		__in	LPTSTR	lpKey,
-		__inout	LPTSTR	lpAccount,
-		__in	ULONG	ulSizeCh
-		);
 
 public:
 	afx_msg void OnBnClickedTemporaryInternetFiles();
