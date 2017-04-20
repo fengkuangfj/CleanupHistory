@@ -61,7 +61,7 @@ BOOL CCleanupHistoryApp::InitInstance()
 	m_pMainWnd = &dlg;
 
 	TCHAR tchWarning[MAX_PATH] = {0};
-	if (dlg.GetAccount(_T("Warning"), tchWarning, _countof(tchWarning)) &&
+	if (!dlg.GetAccount(_T("Warning"), tchWarning, _countof(tchWarning)) ||
 		0 == _tcsicmp(_T("1"), tchWarning))
 		MessageBox(
 		NULL,
