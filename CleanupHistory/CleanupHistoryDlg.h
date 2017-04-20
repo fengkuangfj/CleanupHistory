@@ -64,4 +64,5 @@ public:
 	afx_msg void OnBnClickedYoudaoNote();
 	afx_msg void OnBnClicked360se();
 	afx_msg void OnBnClicked360Safe();
+	afx_msg void OnBnClickedAll();
 };

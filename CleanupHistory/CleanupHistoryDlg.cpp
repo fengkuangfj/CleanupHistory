@@ -54,6 +54,7 @@ BEGIN_MESSAGE_MAP(CCleanupHistoryDlg, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON24, &CCleanupHistoryDlg::OnBnClickedYoudaoNote)
 	ON_BN_CLICKED(IDC_BUTTON25, &CCleanupHistoryDlg::OnBnClicked360se)
 	ON_BN_CLICKED(IDC_BUTTON26, &CCleanupHistoryDlg::OnBnClicked360Safe)
+	ON_BN_CLICKED(IDC_BUTTON27, &CCleanupHistoryDlg::OnBnClickedAll)
 END_MESSAGE_MAP()
 
 // CCleanupHistoryDlg 消息处理程序
@@ -1415,6 +1416,39 @@ void CCleanupHistoryDlg::OnBnClicked360Safe()
 			hFind = INVALID_HANDLE_VALUE;
 		}
 	}
+
+	return;
+}
+
+void CCleanupHistoryDlg::OnBnClickedAll()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	OnBnClickedTemporaryInternetFiles();
+	OnBnClickedInternetCookies();
+	OnBnClickedInternetHistoryItems();
+	OnBnClickedInternetTypedUrls();
+	OnBnClickedInternetProtectedStorageSystemProvider();
+	OnBnClickedIntelliForms();
+	OnBnClickedRASAdresses();
+	OnBnClickedTemp();
+	OnBnClickedRecycleBin();
+	OnBnClickedRunMRU();
+	OnBnClickedRecentDocs();
+	OnBnClickedWinlogonUserName();
+	OnBnClickedDocFindSpec();
+	OnBnClickedFindComputerMRU();
+	OnBnClickedNetHood();
+	OnBnClickedTelNet();
+	OnBnClickedQQ();
+	OnBnClickedRTX();
+	OnBnClickedFoxmail();
+	OnBnClickedGoogleChrome();
+	OnBnClickedYoudaoDict();
+	OnBnClickedThunder();
+	OnBnClickedXmp();
+	OnBnClickedYoudaoNote();
+	OnBnClicked360se();
+	OnBnClicked360Safe();
 
 	return;
 }
