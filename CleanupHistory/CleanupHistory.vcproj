@@ -234,6 +234,26 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\Public\FileOperation\FileOperation.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath="..\..\Public\ModulePath\ModulePath.cpp"
 				>
 				<FileConfiguration
@@ -315,6 +335,26 @@
 			</File>
 			<File
 				RelativePath="..\..\Public\Public.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\Public\RegOperation\RegOperation.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -453,6 +493,26 @@
 					/>
 				</FileConfiguration>
 			</File>
+			<File
+				RelativePath="..\..\Public\Wow64DisableWow64FsRedirection\Wow64DisableWow64FsRedirection.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
 		</Filter>
 		<Filter
 			Name="Í·ÎÄ¼þ"
@@ -476,6 +536,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Public\FileOperation\FileOperation.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Public\ModulePath\ModulePath.h"
 				>
 			</File>
@@ -493,6 +557,10 @@
 			</File>
 			<File
 				RelativePath="..\..\Public\Public.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Public\RegOperation\RegOperation.h"
 				>
 			</File>
 			<File
@@ -525,6 +593,10 @@
 			</File>
 			<File
 				RelativePath=".\targetver.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Public\Wow64DisableWow64FsRedirection\Wow64DisableWow64FsRedirection.h"
 				>
 			</File>
 		</Filter>

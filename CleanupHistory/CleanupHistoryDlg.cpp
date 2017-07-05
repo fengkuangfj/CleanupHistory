@@ -56,6 +56,7 @@ BEGIN_MESSAGE_MAP(CCleanupHistoryDlg, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON26, &CCleanupHistoryDlg::OnBnClicked360Safe)
 	ON_BN_CLICKED(IDC_BUTTON27, &CCleanupHistoryDlg::OnBnClickedAll)
 	ON_BN_CLICKED(IDC_BUTTON28, &CCleanupHistoryDlg::OnBnClickedWeChat)
+	ON_BN_CLICKED(IDC_BUTTON29, &CCleanupHistoryDlg::OnBnClickedButtonDingDing)
 END_MESSAGE_MAP()
 
 // CCleanupHistoryDlg 消息处理程序
@@ -301,7 +302,7 @@ void CCleanupHistoryDlg::OnBnClickedRASAdresses()
 	__try
 	{
 		lStatus = SHDeleteKey(HKEY_CURRENT_USER, _T("Software\\Microsoft\\RAS AutoDial\\Addresses"));
-		if (ERROR_SUCCESS != lStatus)
+		if (ERROR_SUCCESS != lStatus && ERROR_FILE_NOT_FOUND != lStatus)
 		{
 			CSimpleLogSR(MOD_CLEANUP_HISTORY_DLG, LOG_LEVEL_ERROR, "SHDeleteKey failed. (%d)", lStatus);
 			__leave;
@@ -351,7 +352,7 @@ void CCleanupHistoryDlg::OnBnClickedRecycleBin()
 	__try
 	{
 		hResult = SHEmptyRecycleBin(NULL, NULL, SHERB_NOCONFIRMATION | SHERB_NOPROGRESSUI | SHERB_NOSOUND);
-		if (S_OK != hResult)
+		if (S_OK != hResult && E_UNEXPECTED != hResult)
 		{
 			CSimpleLogSR(MOD_CLEANUP_HISTORY_DLG, LOG_LEVEL_ERROR, "SHEmptyRecycleBin failed. (%d)", hResult);
 			__leave;
@@ -432,7 +433,7 @@ void CCleanupHistoryDlg::OnBnClickedWinlogonUserName()
 	__try
 	{
 		lStatus = SHDeleteValue(HKEY_CURRENT_USER, _T("Software\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\\RecentDocs"), _T("DefaultUserName"));
-		if (ERROR_SUCCESS != lStatus)
+		if (ERROR_SUCCESS != lStatus && ERROR_FILE_NOT_FOUND != lStatus)
 		{
 			CSimpleLogSR(MOD_CLEANUP_HISTORY_DLG, LOG_LEVEL_ERROR, "SHDeleteValue failed. (%d)", lStatus);
 			__leave;
@@ -470,7 +471,7 @@ void CCleanupHistoryDlg::OnBnClickedDocFindSpec()
 	__try
 	{
 		lStatus = SHDeleteKey(HKEY_CURRENT_USER, _T("Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Doc Find Spec"));
-		if (ERROR_SUCCESS != lStatus)
+		if (ERROR_SUCCESS != lStatus && ERROR_FILE_NOT_FOUND != lStatus)
 		{
 			CSimpleLogSR(MOD_CLEANUP_HISTORY_DLG, LOG_LEVEL_ERROR, "SHDeleteKey failed. (%d)", lStatus);
 			__leave;
@@ -508,7 +509,7 @@ void CCleanupHistoryDlg::OnBnClickedFindComputerMRU()
 	__try
 	{
 		lStatus = SHDeleteKey(HKEY_CURRENT_USER, _T("Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FindComputerMRU"));
-		if (ERROR_SUCCESS != lStatus)
+		if (ERROR_SUCCESS != lStatus && ERROR_FILE_NOT_FOUND != lStatus)
 		{
 			CSimpleLogSR(MOD_CLEANUP_HISTORY_DLG, LOG_LEVEL_ERROR, "SHDeleteKey failed. (%d)", lStatus);
 			__leave;
@@ -1451,6 +1452,7 @@ void CCleanupHistoryDlg::OnBnClickedAll()
 	OnBnClicked360se();
 	OnBnClicked360Safe();
 	OnBnClickedWeChat();
+	OnBnClickedButtonDingDing();
 
 	return;
 }
@@ -1563,6 +1565,101 @@ void CCleanupHistoryDlg::OnBnClickedWeChat()
 		}
 
 		if (INVALID_HANDLE_VALUE != hFile)	
+		{
+			CloseHandle(hFile);
+			hFile = INVALID_HANDLE_VALUE;
+		}
+	}
+
+	return;
+}
+
+void CCleanupHistoryDlg::OnBnClickedButtonDingDing()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	TCHAR			tchDirRoaming[MAX_PATH] = {0};
+	TCHAR			tchDirAccount[MAX_PATH] = {0};
+	TCHAR			tchDirLog[MAX_PATH] = {0};
+	TCHAR			tchFileFlag[MAX_PATH] = {0};
+	TCHAR			tchFileStorage[MAX_PATH] = {0};
+	LPSTR			lpAccount = NULL;
+	CHAR			chAccount[MAX_PATH] = {0};
+	HANDLE			hFile = INVALID_HANDLE_VALUE;
+	LARGE_INTEGER	liFileSize = {0};
+	LPSTR			lpstrData = NULL;
+	DWORD			dwReaded = 0;
+	DWORD			i = 0;
+
+
+	__try
+	{
+		CCommandLine::Execute(_T("taskkill /f /im DingTalk.exe"), TRUE, TRUE, NULL);
+		CCommandLine::Execute(_T("taskkill /f /im DingTalkHelper.exe"), TRUE, TRUE, NULL);
+
+		// C:\Users\Administrator\AppData\Roaming
+		if (!SHGetSpecialFolderPath(NULL, tchDirRoaming, CSIDL_APPDATA, FALSE))
+		{
+			CSimpleLogSR(MOD_CLEANUP_HISTORY_DLG, LOG_LEVEL_ERROR, "SHGetSpecialFolderPath failed. (%d)", GetLastError());
+			__leave;
+		}
+
+		// 文件
+		StringCchPrintf(tchFileStorage, _countof(tchFileStorage), _T("%s\\DingTalk\\globalStorage\\storage.db"), tchDirRoaming);
+		DeleteFile(tchFileStorage);
+
+		StringCchPrintf(tchFileFlag, _countof(tchFileFlag), _T("%s\\DingTalk\\flag.dat"), tchDirRoaming);
+
+		hFile = CreateFile(
+			tchFileFlag,
+			GENERIC_READ,
+			FILE_SHARE_READ,
+			NULL,
+			OPEN_EXISTING,
+			FILE_ATTRIBUTE_NORMAL,
+			NULL
+			);
+		if (INVALID_HANDLE_VALUE == hFile)
+			__leave;
+
+		if (!GetFileSizeEx(hFile, &liFileSize))
+			__leave;
+
+		lpAccount = (LPSTR)calloc(1, (size_t)liFileSize.QuadPart);
+		if (!lpAccount)
+			__leave;
+
+		if (!ReadFile(
+			hFile,
+			lpAccount,
+			(DWORD)liFileSize.QuadPart,
+			&dwReaded,
+			NULL
+			))
+			__leave;
+
+		CloseHandle(hFile);
+		hFile = INVALID_HANDLE_VALUE;
+
+		DeleteFile(tchFileFlag);
+
+		memcpy(chAccount, lpAccount, dwReaded);
+
+		// 目录
+		StringCchPrintf(tchDirAccount, _countof(tchDirAccount), _T("%s\\DingTalk\\%S"), tchDirRoaming, chAccount);
+		CDirectoryControl::Delete(tchDirAccount);
+
+		StringCchPrintf(tchDirLog, _countof(tchDirLog), _T("%s\\DingTalk\\log"), tchDirRoaming);
+		CDirectoryControl::Delete(tchDirLog);
+	}
+	__finally
+	{
+		if (lpAccount)
+		{
+			free(lpAccount);
+			lpAccount = NULL;
+		}
+
+		if (INVALID_HANDLE_VALUE != hFile)
 		{
 			CloseHandle(hFile);
 			hFile = INVALID_HANDLE_VALUE;

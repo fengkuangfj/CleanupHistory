@@ -84,8 +84,7 @@ BOOL CCleanupHistoryApp::InitInstance()
 		   \r注：\
 		   \r1、其他软件暂不支持或无需在Account.ini中设置账号\
 		   \r2、建议在出差完毕归还公用笔记本时使用(如果不想进行系统还原的话)\
-		   \r3、点击All一键清理\
-		   \r4、至于为什么要清理，你懂的"),
+		   \r3、点击All一键清理"),
 		   _T("提示"),
 		   MB_OK
 		   );
