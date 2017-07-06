@@ -301,12 +301,7 @@ void CCleanupHistoryDlg::OnBnClickedRASAdresses()
 
 	__try
 	{
-		lStatus = SHDeleteKey(HKEY_CURRENT_USER, _T("Software\\Microsoft\\RAS AutoDial\\Addresses"));
-		if (ERROR_SUCCESS != lStatus && ERROR_FILE_NOT_FOUND != lStatus)
-		{
-			CSimpleLogSR(MOD_CLEANUP_HISTORY_DLG, LOG_LEVEL_ERROR, "SHDeleteKey failed. (%d)", lStatus);
-			__leave;
-		}
+		SHDeleteKey(HKEY_CURRENT_USER, _T("Software\\Microsoft\\RAS AutoDial\\Addresses"));
 	}
 	__finally
 	{
@@ -375,12 +370,7 @@ void CCleanupHistoryDlg::OnBnClickedRunMRU()
 
 	__try
 	{
-		lStatus = SHDeleteKey(HKEY_CURRENT_USER, _T("Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\RunMRU"));
-		if (ERROR_SUCCESS != lStatus)
-		{
-			CSimpleLogSR(MOD_CLEANUP_HISTORY_DLG, LOG_LEVEL_ERROR, "SHDeleteKey failed. (%d)", lStatus);
-			__leave;
-		}
+		SHDeleteKey(HKEY_CURRENT_USER, _T("Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\RunMRU"));
 	}
 	__finally
 	{
@@ -408,12 +398,7 @@ void CCleanupHistoryDlg::OnBnClickedRecentDocs()
 
 		CDirectoryControl::Empty(tchDir);
 
-		lStatus = SHDeleteKey(HKEY_CURRENT_USER, _T("Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\RecentDocs"));
-		if (ERROR_SUCCESS != lStatus)
-		{
-			CSimpleLogSR(MOD_CLEANUP_HISTORY_DLG, LOG_LEVEL_ERROR, "SHDeleteKey failed. (%d)", lStatus);
-			__leave;
-		}
+		SHDeleteKey(HKEY_CURRENT_USER, _T("Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\RecentDocs"));
 	}
 	__finally
 	{
@@ -432,26 +417,11 @@ void CCleanupHistoryDlg::OnBnClickedWinlogonUserName()
 
 	__try
 	{
-		lStatus = SHDeleteValue(HKEY_CURRENT_USER, _T("Software\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\\RecentDocs"), _T("DefaultUserName"));
-		if (ERROR_SUCCESS != lStatus && ERROR_FILE_NOT_FOUND != lStatus)
-		{
-			CSimpleLogSR(MOD_CLEANUP_HISTORY_DLG, LOG_LEVEL_ERROR, "SHDeleteValue failed. (%d)", lStatus);
-			__leave;
-		}
+		SHDeleteValue(HKEY_CURRENT_USER, _T("Software\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\\RecentDocs"), _T("DefaultUserName"));
 
-		lStatus = SHDeleteValue(HKEY_CURRENT_USER, _T("Software\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\\RecentDocs"), _T("AltDefaultUserName"));
-		if (ERROR_SUCCESS != lStatus)
-		{
-			CSimpleLogSR(MOD_CLEANUP_HISTORY_DLG, LOG_LEVEL_ERROR, "SHDeleteValue failed. (%d)", lStatus);
-			__leave;
-		}
+		SHDeleteValue(HKEY_CURRENT_USER, _T("Software\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\\RecentDocs"), _T("AltDefaultUserName"));
 
-		lStatus = SHDeleteValue(HKEY_LOCAL_MACHINE, _T("Software\\Microsoft\\Windows\\CurrentVersion\\Winlogon\\RecentDocs"), _T("DefaultUserName"));
-		if (ERROR_SUCCESS != lStatus)
-		{
-			CSimpleLogSR(MOD_CLEANUP_HISTORY_DLG, LOG_LEVEL_ERROR, "SHDeleteValue failed. (%d)", lStatus);
-			__leave;
-		}
+		SHDeleteValue(HKEY_LOCAL_MACHINE, _T("Software\\Microsoft\\Windows\\CurrentVersion\\Winlogon\\RecentDocs"), _T("DefaultUserName"));
 	}
 	__finally
 	{
@@ -470,26 +440,11 @@ void CCleanupHistoryDlg::OnBnClickedDocFindSpec()
 
 	__try
 	{
-		lStatus = SHDeleteKey(HKEY_CURRENT_USER, _T("Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Doc Find Spec"));
-		if (ERROR_SUCCESS != lStatus && ERROR_FILE_NOT_FOUND != lStatus)
-		{
-			CSimpleLogSR(MOD_CLEANUP_HISTORY_DLG, LOG_LEVEL_ERROR, "SHDeleteKey failed. (%d)", lStatus);
-			__leave;
-		}
+		SHDeleteKey(HKEY_CURRENT_USER, _T("Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Doc Find Spec"));
 
-		lStatus = SHDeleteKey(HKEY_CURRENT_USER, _T("Software\\Microsoft\\Internet Explorer\\Explorer Bars\\{C4EE31F3-4768-11D2-BE5C-00A0C9A83DA1}\\ContainingTextMRU"));
-		if (ERROR_SUCCESS != lStatus)
-		{
-			CSimpleLogSR(MOD_CLEANUP_HISTORY_DLG, LOG_LEVEL_ERROR, "SHDeleteKey failed. (%d)", lStatus);
-			__leave;
-		}
+		SHDeleteKey(HKEY_CURRENT_USER, _T("Software\\Microsoft\\Internet Explorer\\Explorer Bars\\{C4EE31F3-4768-11D2-BE5C-00A0C9A83DA1}\\ContainingTextMRU"));
 
-		lStatus = SHDeleteKey(HKEY_LOCAL_MACHINE, _T("Software\\Microsoft\\Internet Explorer\\Explorer Bars\\{C4EE31F3-4768-11D2-BE5C-00A0C9A83DA1}\\FilesNamedMRU"));
-		if (ERROR_SUCCESS != lStatus)
-		{
-			CSimpleLogSR(MOD_CLEANUP_HISTORY_DLG, LOG_LEVEL_ERROR, "SHDeleteKey failed. (%d)", lStatus);
-			__leave;
-		}
+		SHDeleteKey(HKEY_LOCAL_MACHINE, _T("Software\\Microsoft\\Internet Explorer\\Explorer Bars\\{C4EE31F3-4768-11D2-BE5C-00A0C9A83DA1}\\FilesNamedMRU"));
 	}
 	__finally
 	{
@@ -508,19 +463,9 @@ void CCleanupHistoryDlg::OnBnClickedFindComputerMRU()
 
 	__try
 	{
-		lStatus = SHDeleteKey(HKEY_CURRENT_USER, _T("Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FindComputerMRU"));
-		if (ERROR_SUCCESS != lStatus && ERROR_FILE_NOT_FOUND != lStatus)
-		{
-			CSimpleLogSR(MOD_CLEANUP_HISTORY_DLG, LOG_LEVEL_ERROR, "SHDeleteKey failed. (%d)", lStatus);
-			__leave;
-		}
+		SHDeleteKey(HKEY_CURRENT_USER, _T("Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FindComputerMRU"));
 
-		lStatus = SHDeleteKey(HKEY_CURRENT_USER, _T("Software\\Microsoft\\Internet Explorer\\Explorer Bars\\{C4EE31F3-4768-11D2-BE5C-00A0C9A83DA1}\\ComputerNameMRU"));
-		if (ERROR_SUCCESS != lStatus)
-		{
-			CSimpleLogSR(MOD_CLEANUP_HISTORY_DLG, LOG_LEVEL_ERROR, "SHDeleteKey failed. (%d)", lStatus);
-			__leave;
-		}
+		SHDeleteKey(HKEY_CURRENT_USER, _T("Software\\Microsoft\\Internet Explorer\\Explorer Bars\\{C4EE31F3-4768-11D2-BE5C-00A0C9A83DA1}\\ComputerNameMRU"));
 	}
 	__finally
 	{
@@ -1344,7 +1289,7 @@ void CCleanupHistoryDlg::OnBnClicked360Safe()
 		CCommandLine::Execute(_T("taskkill /f /im 360Safe.exe"), TRUE, TRUE, NULL);
 
 		// ×¢²á±í
-		lResult = SHDeleteValue(
+		SHDeleteValue(
 			HKEY_CURRENT_USER,
 			_T("Software\\360safe"),
 			_T("IDLastedU")
