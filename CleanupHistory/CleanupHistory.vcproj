@@ -474,7 +474,47 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\Public\StorageDevice\StorageDevice.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath="..\..\Public\StringInternal\StringInternal.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\Public\Wmi\Wmi.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -588,11 +628,19 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Public\StorageDevice\StorageDevice.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Public\StringInternal\StringInternal.h"
 				>
 			</File>
 			<File
 				RelativePath=".\targetver.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Public\Wmi\Wmi.h"
 				>
 			</File>
 			<File

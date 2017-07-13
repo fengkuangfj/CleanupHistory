@@ -129,7 +129,8 @@ void CCleanupHistoryDlg::OnBnClickedTemporaryInternetFiles()
 			__leave;
 		}
 
-		CDirectoryControl::Empty(tchDir);
+		for (; *tchDir <= _T('Z'); (*tchDir)++)
+			CDirectoryControl::Empty(tchDir);
 	}
 	__finally
 	{
@@ -157,7 +158,8 @@ void CCleanupHistoryDlg::OnBnClickedInternetCookies()
 			__leave;
 		}
 
-		CDirectoryControl::Empty(tchDir);
+		for (; *tchDir <= _T('Z'); (*tchDir)++)
+			CDirectoryControl::Empty(tchDir);
 	}
 	__finally
 	{
@@ -185,7 +187,8 @@ void CCleanupHistoryDlg::OnBnClickedInternetHistoryItems()
 			__leave;
 		}
 
-		CDirectoryControl::Empty(tchDir);
+		for (; *tchDir <= _T('Z'); (*tchDir)++)
+			CDirectoryControl::Empty(tchDir);
 	}
 	__finally
 	{
@@ -327,7 +330,8 @@ void CCleanupHistoryDlg::OnBnClickedTemp()
 			__leave;
 		}
 
-		CDirectoryControl::Empty(tchDir);
+		for (; *tchDir <= _T('Z'); (*tchDir)++)
+			CDirectoryControl::Empty(tchDir);
 	}
 	__finally
 	{
@@ -396,7 +400,8 @@ void CCleanupHistoryDlg::OnBnClickedRecentDocs()
 			__leave;
 		}
 
-		CDirectoryControl::Empty(tchDir);
+		for (; *tchDir <= _T('Z'); (*tchDir)++)
+			CDirectoryControl::Empty(tchDir);
 
 		SHDeleteKey(HKEY_CURRENT_USER, _T("Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\RecentDocs"));
 	}
@@ -486,7 +491,8 @@ void CCleanupHistoryDlg::OnBnClickedNetHood()
 		if (!SHGetSpecialFolderPath(NULL, tchDir, CSIDL_NETHOOD, FALSE))
 			__leave;
 
-		CDirectoryControl::Empty(tchDir);
+		for (; *tchDir <= _T('Z'); (*tchDir)++)
+			CDirectoryControl::Empty(tchDir);
 	}
 	__finally
 	{
@@ -558,7 +564,8 @@ void CCleanupHistoryDlg::OnBnClickedQQ()
 		}
 
 		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent"), tchDirRoaming);
-		CDirectoryControl::DeleteInternalDir(tchPath, tchAccount, FALSE);
+		for (; *tchPath <= _T('Z'); (*tchPath)++)
+			CDirectoryControl::DeleteInternalDir(tchPath, tchAccount, FALSE);
 
 		// C:\ProgramData
 		if (!SHGetSpecialFolderPath(NULL, tchDirProgramData, CSIDL_COMMON_APPDATA, FALSE))
@@ -568,7 +575,8 @@ void CCleanupHistoryDlg::OnBnClickedQQ()
 		}
 
 		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent\\QQProtect\\Qscan\\%s"), tchDirProgramData, tchAccount);
-		CDirectoryControl::Delete(tchPath);
+		for (; *tchPath <= _T('Z'); (*tchPath)++)
+			CDirectoryControl::Delete(tchPath);
 
 		// D:\My Documents
 		if (!SHGetSpecialFolderPath(NULL, tchDirDocuments, CSIDL_MYDOCUMENTS, FALSE))
@@ -578,17 +586,20 @@ void CCleanupHistoryDlg::OnBnClickedQQ()
 		}
 
 		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent Files\\%s"), tchDirDocuments, tchAccount);
-		CDirectoryControl::Delete(tchPath);
+		for (; *tchPath <= _T('Z'); (*tchPath)++)
+			CDirectoryControl::Delete(tchPath);
 
 		// 文件
 		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent\\QQ\\Misc\\%s"), tchDirRoaming, tchAccount);
 		DeleteFile(tchPath);
 
 		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent Files\\All Users\\QQ\\Misc"), tchDirDocuments);
-		CDirectoryControl::DeleteInternalFile(tchPath, tchAccount, TRUE);
+		for (; *tchPath <= _T('Z'); (*tchPath)++)
+			CDirectoryControl::DeleteInternalFile(tchPath, tchAccount, TRUE);
 
 		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Tencent Files\\All Users\\QQ"), tchDirDocuments);
-		CDirectoryControl::DeleteInternalFile(tchPath, _T(".db"), TRUE);
+		for (; *tchPath <= _T('Z'); (*tchPath)++)
+			CDirectoryControl::DeleteInternalFile(tchPath, _T(".db"), TRUE);
 
 		// 注册表
 		StringCchPrintf(tchPath, _countof(tchPath), _T("SOFTWARE\\Tencent\\Plugin\\VAS\\%s"), tchAccount);
@@ -635,7 +646,8 @@ void CCleanupHistoryDlg::OnBnClickedRTX()
 		}
 
 		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\My RTX Files\\%s"), tchDirDocuments, tchAccount);
-		CDirectoryControl::Delete(tchPath);
+		for (; *tchPath <= _T('Z'); (*tchPath)++)
+			CDirectoryControl::Delete(tchPath);
 
 		OsProcessorType = COperationSystemVersion::GetInstance()->GetOSProcessorType();
 		if (OS_PROCESSOR_TYPE_X64 == OsProcessorType)
@@ -676,13 +688,15 @@ void CCleanupHistoryDlg::OnBnClickedRTX()
 				for (*tchInstDir = _T('C'); *tchInstDir <= _T('Z'); (*tchInstDir)++)
 				{
 					StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\RTXC File List\\%s\\Accounts\\%s"), tchDirDocuments, tchInstDir, tchAccount);
-					CDirectoryControl::Delete(tchPath);
+					for (; *tchPath <= _T('Z'); (*tchPath)++)
+						CDirectoryControl::Delete(tchPath);
 
 					StringCchPrintf(tchPathCfg, _countof(tchPathCfg), _T("%s\\RTXC File List\\%s\\Accounts\\rtx.cfg"), tchDirDocuments, tchInstDir);
 					if (GetPrivateProfileString(_T("Default"), _T("file_page_path"), _T(""), tchPath, _countof(tchPath), tchPathCfg))
 					{
 						StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\%s"), tchPath, tchAccount);
-						CDirectoryControl::Delete(tchPath);
+						for (; *tchPath <= _T('Z'); (*tchPath)++)
+							CDirectoryControl::Delete(tchPath);
 
 						WritePrivateProfileString(_T("Default"), _T("file_page_path"), _T(""), tchPathCfg);
 					}
@@ -750,7 +764,8 @@ void CCleanupHistoryDlg::OnBnClickedFoxmail()
 			if (PathRemoveFileSpec(tchInstDir))
 			{
 				StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Storage\\%s"), tchInstDir, tchAccount);
-				CDirectoryControl::Delete(tchPath);
+				for (; *tchPath <= _T('Z'); (*tchPath)++)
+					CDirectoryControl::Delete(tchPath);
 
 				lpPosition = PathFindFileName(tchInstDir);
 				if (lpPosition)
@@ -765,7 +780,8 @@ void CCleanupHistoryDlg::OnBnClickedFoxmail()
 						{
 							*lpPosition = _T('\0');
 							StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Foxmail%s"), tchDirRoaming, tchVersion);
-							CDirectoryControl::Empty(tchPath);
+							for (; *tchPath <= _T('Z'); (*tchPath)++)
+								CDirectoryControl::Empty(tchPath);
 						}
 					}
 				}
@@ -858,7 +874,8 @@ void CCleanupHistoryDlg::OnBnClickedGoogleChrome()
 											{
 												*lpPathEnd = _T('\0');
 												StringCchPrintf(tchPath, _countof(tchPath), _T("%s"), lpPathBegin);
-												CDirectoryControl::Delete(tchPath);
+												for (; *tchPath <= _T('Z'); (*tchPath)++)
+													CDirectoryControl::Delete(tchPath);
 											}
 										}
 									}
@@ -871,7 +888,8 @@ void CCleanupHistoryDlg::OnBnClickedGoogleChrome()
 		}		
 
 		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Google\\Chrome\\User Data"), tchLocal);
-		CDirectoryControl::Delete(tchPath);		
+		for (; *tchPath <= _T('Z'); (*tchPath)++)
+			CDirectoryControl::Delete(tchPath);		
 
 		StringCchPrintf(tchUser, _countof(tchUser), _T("%s"), tchLocal);
 		if (PathRemoveFileSpec(tchUser))
@@ -879,7 +897,8 @@ void CCleanupHistoryDlg::OnBnClickedGoogleChrome()
 			if (PathRemoveFileSpec(tchUser))
 			{
 				StringCchPrintf(tchUser, _countof(tchUser), _T("%s\\Downloads"), tchUser);
-				CDirectoryControl::Delete(tchUser);
+				for (; *tchUser <= _T('Z'); (*tchUser)++)
+					CDirectoryControl::Delete(tchUser);
 			}
 		}
 	}
@@ -926,7 +945,8 @@ void CCleanupHistoryDlg::OnBnClickedYoudaoDict()
 		}
 
 		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Yodao\\DeskDict\\WbData\\%s"), tchLocal, tchAccount);
-		CDirectoryControl::Delete(tchPath);
+		for (; *tchPath <= _T('Z'); (*tchPath)++)
+			CDirectoryControl::Delete(tchPath);
 
 		// 文件
 		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\Yodao\\DeskDict\\wordbookloginhistory.dat"), tchLocal);
@@ -983,13 +1003,16 @@ void CCleanupHistoryDlg::OnBnClickedThunder()
 						if (_T('\\') == *(tchDir + _tcslen(tchDir) - 1))
 							*(tchDir + _tcslen(tchDir) - 1) = _T('\0');
 
-						CDirectoryControl::Delete(tchDir);
+						for (; *tchDir <= _T('Z'); (*tchDir)++)
+							CDirectoryControl::Delete(tchDir);
 
 						WritePrivateProfileString(_T("TaskDefaultSettings"), _T("DefaultPath"), _T(""), tchNewTask);
 					}
 
 					StringCchPrintf(tchDir, _countof(tchDir), _T("%s\\Profiles"), tchInstDir);
-					CDirectoryControl::EmptyExceptFile(tchDir, _T("Thunder.ico"), FALSE);
+
+					for (; *tchDir <= _T('Z'); (*tchDir)++)
+						CDirectoryControl::EmptyExceptFile(tchDir, _T("Thunder.ico"), FALSE);
 				}
 			}
 		}
@@ -1033,7 +1056,8 @@ void CCleanupHistoryDlg::OnBnClickedXmp()
 		}
 
 		StringCchPrintf(tchDir, _countof(tchDir), _T("%sxmp"), tchTemp);
-		CDirectoryControl::Delete(tchDir);
+		for (; *tchDir <= _T('Z'); (*tchDir)++)
+			CDirectoryControl::Delete(tchDir);
 
 		OsProcessorType = COperationSystemVersion::GetInstance()->GetOSProcessorType();
 		if (OS_PROCESSOR_TYPE_X64 == OsProcessorType)
@@ -1056,7 +1080,9 @@ void CCleanupHistoryDlg::OnBnClickedXmp()
 			if (PathRemoveFileSpec(tchInstDir))
 			{
 				StringCchPrintf(tchDir, _countof(tchDir), _T("%s\\ProgramData"), tchInstDir);
-				CDirectoryControl::Delete(tchDir);
+				for (; *tchDir <= _T('Z'); (*tchDir)++)
+					CDirectoryControl::Delete(tchDir);
+
 			}
 		}
 
@@ -1076,7 +1102,8 @@ void CCleanupHistoryDlg::OnBnClickedXmp()
 			);
 		if (ERROR_SUCCESS == lStatus)
 		{
-			CDirectoryControl::Delete(tchDir);
+			for (; *tchDir <= _T('Z'); (*tchDir)++)
+				CDirectoryControl::Delete(tchDir);
 
 			SHDeleteValue(
 				HKEY_LOCAL_MACHINE,
@@ -1119,10 +1146,12 @@ void CCleanupHistoryDlg::OnBnClickedYoudaoNote()
 
 		// 目录
 		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\YNote\\Data"), tchLocal);
-		CDirectoryControl::Empty(tchPath);
+		for (; *tchPath <= _T('Z'); (*tchPath)++)
+			CDirectoryControl::Empty(tchPath);
 
 		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\youdao\\ynote"), tchLocal);
-		CDirectoryControl::DeleteInternalFile(tchPath, tchAccount, TRUE);
+		for (; *tchPath <= _T('Z'); (*tchPath)++)
+			CDirectoryControl::DeleteInternalFile(tchPath, tchAccount, TRUE);
 
 		// 文件
 		StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\youdao\\ynote\\history15.dat"), tchLocal);
@@ -1258,7 +1287,8 @@ void CCleanupHistoryDlg::OnBnClicked360se()
 			if (_T('\\') == *(tchDir + _tcslen(tchDir) - 1))
 				*(tchDir + _tcslen(tchDir) - 1) = _T('\0');
 
-			CDirectoryControl::Delete(tchDir);
+			for (; *tchDir <= _T('Z'); (*tchDir)++)
+				CDirectoryControl::Delete(tchDir);
 		}
 
 		// 文件
@@ -1336,10 +1366,12 @@ void CCleanupHistoryDlg::OnBnClicked360Safe()
 
 					if (0 != _tcsicmp(_T("safeid"), ffd.cFileName))
 					{
-						CDirectoryControl::Delete(tchPath);
+						for (; *tchPath <= _T('Z'); (*tchPath)++)
+							CDirectoryControl::Delete(tchPath);
 
 						StringCchPrintf(tchPath, _countof(tchPath), _T("%s\\360Safe\\safeid\\safe\\%s"), tchDirRoaming, ffd.cFileName);
-						CDirectoryControl::Delete(tchPath);
+						for (; *tchPath <= _T('Z'); (*tchPath)++)
+							CDirectoryControl::Delete(tchPath);
 					}
 				}
 			}
@@ -1435,7 +1467,8 @@ void CCleanupHistoryDlg::OnBnClickedWeChat()
 
 		// 文件
 		StringCchPrintf(tchDirAllUsers, _countof(tchDirAllUsers), _T("%s\\WeChat Files\\All Users"), tchDirDocuments);
-		CDirectoryControl::DeleteInternalFile(tchDirAllUsers, _T(".jpg"), TRUE);
+		for (; *tchDirAllUsers <= _T('Z'); (*tchDirAllUsers)++)
+			CDirectoryControl::DeleteInternalFile(tchDirAllUsers, _T(".jpg"), TRUE);
 
 		// 目录
 		StringCchPrintf(tchFileConfigData, _countof(tchFileConfigData), _T("%s\\config\\config.data"), tchDirAllUsers);
@@ -1496,7 +1529,8 @@ void CCleanupHistoryDlg::OnBnClickedWeChat()
 			__leave;
 
 		StringCchPrintf(tchDirAccount, _countof(tchDirAccount), _T("%s\\WeChat Files\\%s"), tchDirDocuments, tchAccount);
-		CDirectoryControl::Delete(tchDirAccount);
+		for (; *tchDirAccount <= _T('Z'); (*tchDirAccount)++)
+			CDirectoryControl::Delete(tchDirAccount);
 
 		// 文件
 		DeleteFile(tchFileConfigData);
@@ -1591,10 +1625,12 @@ void CCleanupHistoryDlg::OnBnClickedButtonDingDing()
 
 		// 目录
 		StringCchPrintf(tchDirAccount, _countof(tchDirAccount), _T("%s\\DingTalk\\%S"), tchDirRoaming, chAccount);
-		CDirectoryControl::Delete(tchDirAccount);
+		for (; *tchDirAccount <= _T('Z'); (*tchDirAccount)++)
+			CDirectoryControl::Delete(tchDirAccount);
 
 		StringCchPrintf(tchDirLog, _countof(tchDirLog), _T("%s\\DingTalk\\log"), tchDirRoaming);
-		CDirectoryControl::Delete(tchDirLog);
+		for (; *tchDirLog <= _T('Z'); (*tchDirLog)++)
+			CDirectoryControl::Delete(tchDirLog);
 	}
 	__finally
 	{
