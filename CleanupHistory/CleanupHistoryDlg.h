@@ -65,5 +65,6 @@ public:
 	afx_msg void OnBnClicked360Safe();
 	afx_msg void OnBnClickedAll();
 	afx_msg void OnBnClickedWeChat();
-	afx_msg void OnBnClickedButtonDingDing();
+	afx_msg void OnBnClickedDingDing();
+	afx_msg void OnBnClickedFeiGe();
 };

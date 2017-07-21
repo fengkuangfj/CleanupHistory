@@ -56,7 +56,8 @@ BEGIN_MESSAGE_MAP(CCleanupHistoryDlg, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON26, &CCleanupHistoryDlg::OnBnClicked360Safe)
 	ON_BN_CLICKED(IDC_BUTTON27, &CCleanupHistoryDlg::OnBnClickedAll)
 	ON_BN_CLICKED(IDC_BUTTON28, &CCleanupHistoryDlg::OnBnClickedWeChat)
-	ON_BN_CLICKED(IDC_BUTTON29, &CCleanupHistoryDlg::OnBnClickedButtonDingDing)
+	ON_BN_CLICKED(IDC_BUTTON29, &CCleanupHistoryDlg::OnBnClickedDingDing)
+	ON_BN_CLICKED(IDC_BUTTON30, &CCleanupHistoryDlg::OnBnClickedFeiGe)
 END_MESSAGE_MAP()
 
 // CCleanupHistoryDlg 消息处理程序
@@ -970,6 +971,7 @@ void CCleanupHistoryDlg::OnBnClickedThunder()
 	DWORD	dwInstDirSizeB = 0;
 	TCHAR	tchDir[MAX_PATH] = {0};
 	TCHAR	tchNewTask[MAX_PATH] = {0};
+	BOOL	bCheckAll = FALSE;
 
 
 	__try
@@ -991,7 +993,17 @@ void CCleanupHistoryDlg::OnBnClickedThunder()
 			tchInstDir,
 			&dwInstDirSizeB
 			);
-		if (ERROR_SUCCESS == lStatus)
+		if (ERROR_SUCCESS != lStatus)
+		{
+			if (OS_PROCESSOR_TYPE_X86 == COperationSystemVersion::GetInstance()->GetOSProcessorType())
+				StringCchPrintf(tchInstDir, _countof(tchInstDir), _T("C:\\Program Files\\Thunder Network\\Thunder\\Program\\Thunder.exe"));
+			else
+				StringCchPrintf(tchInstDir, _countof(tchInstDir), _T("C:\\Program Files (x86)\\Thunder Network\\Thunder\\Program\\Thunder.exe"));
+
+			bCheckAll = TRUE;
+		}
+
+		for (; *tchInstDir <= _T('Z'); (*tchInstDir)++)
 		{
 			if (PathRemoveFileSpec(tchInstDir))
 			{
@@ -1015,6 +1027,9 @@ void CCleanupHistoryDlg::OnBnClickedThunder()
 						CDirectoryControl::EmptyExceptFile(tchDir, _T("Thunder.ico"), FALSE);
 				}
 			}
+
+			if (!bCheckAll)
+				break;
 		}
 
 		StringCchPrintf(tchDir, _countof(tchDir), _T("C:\\迅雷下载"));
@@ -1429,7 +1444,8 @@ void CCleanupHistoryDlg::OnBnClickedAll()
 	OnBnClicked360se();
 	OnBnClicked360Safe();
 	OnBnClickedWeChat();
-	OnBnClickedButtonDingDing();
+	OnBnClickedDingDing();
+	OnBnClickedFeiGe();
 
 	return;
 }
@@ -1503,7 +1519,7 @@ void CCleanupHistoryDlg::OnBnClickedWeChat()
 
 		CloseHandle(hFile);
 		hFile = INVALID_HANDLE_VALUE;
-	
+
 		// D:\My Documents
 		if (!SHGetSpecialFolderPathA(NULL, chDirDocuments, CSIDL_MYDOCUMENTS, FALSE))
 		{
@@ -1553,7 +1569,7 @@ void CCleanupHistoryDlg::OnBnClickedWeChat()
 	return;
 }
 
-void CCleanupHistoryDlg::OnBnClickedButtonDingDing()
+void CCleanupHistoryDlg::OnBnClickedDingDing()
 {
 	// TODO: 在此添加控件通知处理程序代码
 	TCHAR			tchDirRoaming[MAX_PATH] = {0};
@@ -1645,6 +1661,66 @@ void CCleanupHistoryDlg::OnBnClickedButtonDingDing()
 			CloseHandle(hFile);
 			hFile = INVALID_HANDLE_VALUE;
 		}
+	}
+
+	return;
+}
+
+void CCleanupHistoryDlg::OnBnClickedFeiGe()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	TCHAR	tchDirRoaming[MAX_PATH] = {0};
+	TCHAR	tchFileHistoryList[MAX_PATH] = {0};
+	TCHAR	tchDirInstal[MAX_PATH] = {0};
+	TCHAR	tchFileCustomName[MAX_PATH] = {0};
+	TCHAR	tchFileSettingCfg[MAX_PATH] = {0};
+	TCHAR	tchDirDownload[MAX_PATH] = {0};
+	TCHAR	tchDirRecvFile[MAX_PATH] = {0};
+	TCHAR	tchDirSaveAs[MAX_PATH] = {0};
+
+
+	__try
+	{
+		CCommandLine::Execute(_T("taskkill /f /im Feige.exe"), TRUE, TRUE, NULL);
+
+		// C:\Users\Administrator\AppData\Roaming
+		if (!SHGetSpecialFolderPath(NULL, tchDirRoaming, CSIDL_APPDATA, FALSE))
+		{
+			CSimpleLogSR(MOD_CLEANUP_HISTORY_DLG, LOG_LEVEL_ERROR, "SHGetSpecialFolderPath failed. (%d)", GetLastError());
+			__leave;
+		}
+
+		// 文件
+		StringCchPrintf(tchFileHistoryList, _countof(tchFileHistoryList), _T("%s\\Feige\\HistoryList.db"), tchDirRoaming);
+		DeleteFile(tchFileHistoryList);
+
+		if (OS_PROCESSOR_TYPE_X86 == COperationSystemVersion::GetInstance()->GetOSProcessorType())
+			StringCchPrintf(tchDirInstal, _countof(tchDirInstal), _T("C:\\Program Files\\Feige"));
+		else
+			StringCchPrintf(tchDirInstal, _countof(tchDirInstal), _T("C:\\Program Files (x86)\\Feige"));
+
+		for (; *tchDirInstal <= _T('Z'); (*tchDirInstal)++)
+		{
+			StringCchPrintf(tchFileCustomName, _countof(tchFileCustomName), _T("%s\\CustomName.ini"), tchDirInstal);
+			if (PathFileExists(tchFileCustomName))
+				WritePrivateProfileString(_T("FeigeConfig"), _T("UserName"), _T(""), tchFileCustomName);
+
+			// DefaultRecvFileDir
+// 			for (; *tchDirRecvFile <= _T('Z'); (*tchDirRecvFile)++)
+// 				CDirectoryControl::Delete(tchDirRecvFile);
+
+			// DefaultSaveAsPath
+// 			for (; *tchDirSaveAs <= _T('Z'); (*tchDirSaveAs)++)
+// 				CDirectoryControl::Delete(tchDirSaveAs);
+		}
+
+		StringCchPrintf(tchDirDownload, _countof(tchDirDownload), _T("C:\\FeigeDownload"));
+		for (; *tchDirDownload <= _T('Z'); (*tchDirDownload)++)
+			CDirectoryControl::Delete(tchDirDownload);
+	}
+	__finally
+	{
+		;
 	}
 
 	return;
